@@ -1,6 +1,8 @@
-import {WisdomInterface} from "common";
+import { WisdomInterface } from "common";
 
-import {WeatherDataComponent} from "./lib/weather-data.component";
+import { WeatherDataComponent } from "./lib/weather-data.component";
+import de_DE from "./lib/i18n/de_DE";
+import en_US from "./lib/i18n/en_US";
 
 export const wisdomInterface: WisdomInterface = {
   route: {
@@ -9,7 +11,7 @@ export const wisdomInterface: WisdomInterface = {
   },
   scopes: [],
   translations: {
-    de_DE: {},
-    en_US: {},
+    de_DE,
+    en_US,
   },
 };
