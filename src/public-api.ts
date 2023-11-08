@@ -15,3 +15,7 @@ export const wisdomInterface: WisdomInterface = {
     en_US,
   },
 };
+
+export * from './lib/weather-data.service';
+export * from './lib/weather-data.component';
+export * from './lib/weather-data.module';
