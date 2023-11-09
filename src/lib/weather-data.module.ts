@@ -1,14 +1,14 @@
-import {NgModule} from "@angular/core";
-import {TranslateModule} from "@ngx-translate/core";
-import {WisdomModule} from "common";
+import { NgModule } from "@angular/core";
+import { TranslateModule } from "@ngx-translate/core";
+import { WisdomModule } from "common";
 
-import {WeatherDataComponent} from "./weather-data.component";
+import { WeatherDataComponent } from "./weather-data.component";
 
 
 
 @NgModule({
   declarations: [
-    WeatherDataComponent
+    WeatherDataComponent,
   ],
   imports: [
     WisdomModule,
