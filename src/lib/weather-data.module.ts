@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { TranslateModule } from "@ngx-translate/core";
 import { WisdomModule } from "common";
+import { CommonModule } from "@angular/common";
 
 import { WeatherDataComponent } from "./weather-data.component";
 
@@ -12,7 +13,8 @@ import { WeatherDataComponent } from "./weather-data.component";
   ],
   imports: [
     WisdomModule,
-    TranslateModule
+    TranslateModule,
+    CommonModule
   ],
   exports: [
     WeatherDataComponent
