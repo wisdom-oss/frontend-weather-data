@@ -1,33 +1,18 @@
 <!-- ForeCast Creation -->
-<div [style]="{ height: heightOuterBox }" class="box">
+<div [style]="{ height: heightWeatherBox }" class="box">
   <h1 class="title has-text-centered is-size-3">
     {{ "weather-data.title.name" | translate }}
   </h1>
-  <div class="columns is-multiline is-flex is-justify-content-space-between">
-    <div
-      *ngFor="let resolution of possibleResolutions | keyvalue"
-      class="column is-narrow"
-    >
-      <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger">
-          <button
-            class="button is-primary"
-            aria-haspopup="true"
-            aria-controls="dropdown-menu"
-          >
-            <span>{{ resolution.key }}</span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <a
-              *ngFor="let dataType of resolution.value"
-              class="dropdown-item"
-              >{{ dataType }}</a
-            >
-          </div>
-        </div>
-      </div>
+  <div class="card block">
+    <div class="card-content p-0 is-clipped">
+      <map
+        #map
+        height="{{ heightWeatherBox }}"
+        [markers]="stationMarkers"
+        [layerSelectable]="false"
+        center="51.165691, 10.451526"
+        zoom="6"
+      ></map>
     </div>
   </div>
 </div>

@@ -1,7 +1,8 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { Marker } from "common";
+import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { timeResolutions } from "./dwd-interfaces";
-import { OnInit } from "@angular/core";
+import { Stations } from "./dwd-interfaces";
 
 @Component({
   selector: 'lib-weather-data',
@@ -9,27 +10,45 @@ import { OnInit } from "@angular/core";
   styles: [
   ]
 })
+
 export class WeatherDataComponent implements OnInit {
 
-  heightOuterBox: string = "20vh";
+  stations: Stations = [];
+  stationMarkers: Marker[] = [];
 
-  possibleResolutions!: timeResolutions;
+  heightWeatherBox: string = "75vh";
+  heightWeatherMap: string = (85 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+
+  possibleResolutions!: any;
 
   constructor(public weatherService: WeatherDataService) { }
 
   ngOnInit(): void {
-    this.getResolutions();
+    this.getStationsforMap();
+  }
+
+  getStationsforMap(): void {
+    this.weatherService.getStations("/").subscribe(discovery => {
+      this.stations = discovery;
+      this.stationMarkers = Array.from(this.stations.map(station => {
+        return {
+          coordinates: station.location.coordinates,
+          tooltip: station.name,
+          icon: dwdStationIcon
+        }
+      }));
+    });
   }
 
   /**
-  * calls bws service to retrieve all physical meter information
+  * get resolution data from dwd
   */
   getResolutions(): void {
-    this.weatherService.getResolutions('/discover').subscribe({
+    this.weatherService.getResolutions('/').subscribe({
       next: (response) => {
         // extracts the meters content immediately, 
         // so you dont have to do it all the time
-        this.possibleResolutions = response as timeResolutions;
+        this.possibleResolutions = response;
         console.log(this.possibleResolutions);
       },
       error: (error) => {

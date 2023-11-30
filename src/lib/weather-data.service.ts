@@ -2,11 +2,11 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from "common";
-import { Observable, of } from "rxjs";
-import { timeResolutions } from "./dwd-interfaces";
+import { Observable } from "rxjs";
+import { Stations } from "./dwd-interfaces";
 
 
-const API_PREFIX = "dwd-proxy";
+const API_PREFIX = "dwd";
 
 /**
  * injects the service to be singleton throughout project. 
@@ -18,49 +18,34 @@ const API_PREFIX = "dwd-proxy";
 
 export class WeatherDataService {
 
-  exampleData: timeResolutions = {
-    "1_minute": [
-      "precipitation"
-    ],
-    "5_minutes": [
-    ],
-    "10_minutes": [
-      "air_temperature",
-      "extreme_wind",
-      "solar",
-      "wind",
-      "precipitation"
-    ], "hourly": [
-    ], "subdaily": [
-    ], "daily": [
-    ], "monthly": [
-    ], "annual": [
-    ], "multi-annual": [
-    ]
-  }
-
   /**
    * http context for further information to the request.
    */
   ctx: HttpContext = new HttpContext()
     .set(USE_API_URL, true)
-    .set(USE_LOADER, false)
+    .set(USE_LOADER, true)
     .set(USE_ERROR_HANDLER, 1);
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  getStations(url: string, ctx?: HttpContext): Observable<Stations> {
+    let finalUrl = API_PREFIX + url;
 
-  getResolutions<timeResolutions>(url: string, ctx?: HttpContext) {
-    let finalUrl = this.router.parseUrl(API_PREFIX + url);
-    let finalCtx = ctx || this.ctx;
+    return this.http.get<Stations>(finalUrl, {
+      responseType: "json",
+      context: ctx || this.ctx
+    });
+
+  }
+
+  getResolutions(url: string, ctx?: HttpContext): Observable<any> {
 
     let requestOptions: any = {
-      context: finalCtx,
-      responseType: 'application/json',
+      context: ctx || this.ctx,
+      responseType: 'json',
     };
 
-    let res = this.http.request<timeResolutions>('get', finalUrl.toString(), requestOptions) as Observable<timeResolutions>
-    return of(this.exampleData);
+    return this.http.request<any>('get', API_PREFIX + url, requestOptions);
 
   }
 
