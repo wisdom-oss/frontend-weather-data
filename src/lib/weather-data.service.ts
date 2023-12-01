@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { Router } from "@angular/router";
-import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from "common";
+import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER, USE_CACHE } from "common";
 import { Observable } from "rxjs";
 import { Stations } from "./dwd-interfaces";
 
@@ -24,7 +24,8 @@ export class WeatherDataService {
   ctx: HttpContext = new HttpContext()
     .set(USE_API_URL, true)
     .set(USE_LOADER, true)
-    .set(USE_ERROR_HANDLER, 1);
+    .set(USE_ERROR_HANDLER, 1)
+    .set(USE_CACHE, true);
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -46,6 +47,15 @@ export class WeatherDataService {
     };
 
     return this.http.request<any>('get', API_PREFIX + url, requestOptions);
+
+  }
+
+  getWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
+
+    return this.http.get<any>(API_PREFIX + url, {
+      responseType: "json",
+      context: ctx || this.ctx
+    });
 
   }
 

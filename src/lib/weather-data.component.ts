@@ -13,11 +13,13 @@ import { Stations } from "./dwd-interfaces";
 
 export class WeatherDataComponent implements OnInit {
 
+  heightWeatherBox: string = "75vh";
+  heightWeatherMap: string = (85 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+
   stations: Stations = [];
   stationMarkers: Marker[] = [];
 
-  heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (85 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  weatherData: any;
 
   possibleResolutions!: any;
 
@@ -39,6 +41,14 @@ export class WeatherDataComponent implements OnInit {
       }));
     });
   }
+
+  getWeatherDataByStation(): void {
+    this.weatherService.getWeatherDataByStation("/daily/qn/Oldenburg").subscribe(test => {
+      this.weatherData = test;
+      console.log(test);
+    })
+  }
+
 
   /**
   * get resolution data from dwd

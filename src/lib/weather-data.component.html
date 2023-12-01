@@ -7,7 +7,7 @@
     <div class="card-content p-0 is-clipped">
       <map
         #map
-        height="{{ heightWeatherBox }}"
+        height="{{ heightWeatherMap }}"
         [markers]="stationMarkers"
         [layerSelectable]="false"
         center="51.165691, 10.451526"
@@ -15,4 +15,10 @@
       ></map>
     </div>
   </div>
+</div>
+<div class="box">
+  <h1>Testgelände</h1>
+  <button class="button is-primary" (click)="getWeatherDataByStation()">
+    Test Data Button
+  </button>
 </div>
