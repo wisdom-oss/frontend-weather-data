@@ -69,9 +69,8 @@ export class WeatherDataComponent implements OnInit {
 
   }
 
-
   testWeatherData(): void {
-    this.processApiParams("00044", "air_temperature", "10_minutes")
+    this.processApiParams("00044", "air_temperature", "10_minutes","1701965435", "1701967435")
   }
 
   processApiParams(stationId: string, dataPoint: string, timeResolution: string, from?: string, until?: string): void {
@@ -81,33 +80,39 @@ export class WeatherDataComponent implements OnInit {
       return;
     }
 
-    let base_endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`
-    let final_endpoint = base_endpoint;
+    let endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`
 
     if (from && until) {
-      final_endpoint = base_endpoint + "?" + "from=" + from + "&" + "until=" + until;
+      endpoint = endpoint + `?from=${from}&until=${until}`;
+      //TODO activate from and until
     } else {
-      console.log("No period given, request can take longer!");
+      console.log("No period given, request will take some time!");
     }
 
-    this.weatherService.getWeatherDataByStation(final_endpoint.toString()).subscribe(data => {
-      this.weatherData = data;
-      console.log(data);
+    this.weatherService.getWeatherDataByStation(endpoint.toString()).subscribe({
+      //TODO Discuss with Tim
+      next: (data) => {
+        this.weatherData = data;
+        console.log(this.weatherData);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        console.log("Data retrieval complete");
+      }
     })
   }
 
   searchIdFromNameAndState(name: string, state: string): string | undefined {
     let station: any;
-
     if (this.stations) {
       station = this.stations.find((element) => element.name === name && element.state === state);
     }
-
     if (station === undefined) {
       console.log("ID of: " + name + ", " + state + " not found!");
       return undefined;
     }
-
     return station.id;
 
   }
