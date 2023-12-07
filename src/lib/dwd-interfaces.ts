@@ -1,14 +1,26 @@
 export interface timeResolutions {
-    "1_minute": string[];
-    "5_minutes": string[];
-    "10_minutes": string[];
-    "hourly": string[];
-    "subdaily": string[];
-    "daily": string[];
-    "monthly": string[];
-    "annual": string[];
-    "multi-annual": string[];
+    "1_minute": string;
+    "5_minutes": string;
+    "10_minutes": string;
+    "hourly": string;
+    "subdaily": string;
+    "daily": string;
+    "monthly": string;
+    "annual": string;
+    "multi-annual": string;
 };
+
+export interface dataPoints {
+    "air_temperature": string;
+    "precipitation": string;
+    "solar": string;
+    "soil_temperature": string;
+    "cloud": string;
+    "dew_point": string;
+    "moisture": string;
+    "pressure": string;
+    "sun": string;
+}
 
 export type Stations = Station[];
 

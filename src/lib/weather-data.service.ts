@@ -27,26 +27,16 @@ export class WeatherDataService {
     .set(USE_ERROR_HANDLER, 1)
     .set(USE_CACHE, true);
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient) { }
 
   getStations(url: string, ctx?: HttpContext): Observable<Stations> {
+
     let finalUrl = API_PREFIX + url;
 
     return this.http.get<Stations>(finalUrl, {
       responseType: "json",
       context: ctx || this.ctx
     });
-
-  }
-
-  getResolutions(url: string, ctx?: HttpContext): Observable<any> {
-
-    let requestOptions: any = {
-      context: ctx || this.ctx,
-      responseType: 'json',
-    };
-
-    return this.http.request<any>('get', API_PREFIX + url, requestOptions);
 
   }
 
@@ -59,6 +49,17 @@ export class WeatherDataService {
 
   }
 
+  /**
+     * creates an Observable with an error to subscribe to it and logs the information in the console.
+     * @param msg error meesage
+     * @returns observable with contained error.
+     */
+  handleError(msg: string): Observable<any> {
+
+    return new Observable((observer) => {
+      observer.error(new Error(msg));
+    });
+  }
 
 
 

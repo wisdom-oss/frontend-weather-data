@@ -14,7 +14,7 @@ import { Stations } from "./dwd-interfaces";
 export class WeatherDataComponent implements OnInit {
 
   heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (85 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherMap: string = (80 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   stations: Stations = [];
   stationMarkers: Marker[] = [];
@@ -26,10 +26,10 @@ export class WeatherDataComponent implements OnInit {
   constructor(public weatherService: WeatherDataService) { }
 
   ngOnInit(): void {
-    this.getStationsforMap();
+    this.getStations();
   }
 
-  getStationsforMap(): void {
+  getStations(): void {
     this.weatherService.getStations("/").subscribe(discovery => {
       this.stations = discovery;
       this.stationMarkers = Array.from(this.stations.map(station => {
@@ -42,31 +42,75 @@ export class WeatherDataComponent implements OnInit {
     });
   }
 
+  showStations(): void {
+    console.log(this.stations);
+  }
+
   getWeatherDataByStation(): void {
-    this.weatherService.getWeatherDataByStation("/daily/qn/Oldenburg").subscribe(test => {
+    this.weatherService.getWeatherDataByStation("/00044/air_temperature/10_minutes").subscribe(test => {
       this.weatherData = test;
       console.log(test);
     })
   }
 
-
-  /**
-  * get resolution data from dwd
-  */
-  getResolutions(): void {
-    this.weatherService.getResolutions('/').subscribe({
-      next: (response) => {
-        // extracts the meters content immediately, 
-        // so you dont have to do it all the time
-        this.possibleResolutions = response;
-        console.log(this.possibleResolutions);
+  getWeatherDataByStations(): void {
+    this.weatherService.getWeatherDataByStation("/00044/air_temperature/10_minutes").subscribe({
+      next: (data) => {
+        this.weatherData = data;
+        console.log(this.weatherData);
       },
       error: (error) => {
         console.log(error);
       },
+      complete: () => {
+        console.log("Data retrieval complete");
+      }
+    });
+
+  }
+
+
+  testWeatherData(): void {
+    this.processApiParams("00044", "air_temperature", "10_minutes")
+  }
+
+  processApiParams(stationId: string, dataPoint: string, timeResolution: string, from?: string, until?: string): void {
+    if (!stationId) {
+      //TODO raise Error here
+      console.log("No valid ID");
+      return;
+    }
+
+    let base_endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`
+    let final_endpoint = base_endpoint;
+
+    if (from && until) {
+      final_endpoint = base_endpoint + "?" + "from=" + from + "&" + "until=" + until;
+    } else {
+      console.log("No period given, request can take longer!");
+    }
+
+    this.weatherService.getWeatherDataByStation(final_endpoint.toString()).subscribe(data => {
+      this.weatherData = data;
+      console.log(data);
     })
   }
 
+  searchIdFromNameAndState(name: string, state: string): string | undefined {
+    let station: any;
+
+    if (this.stations) {
+      station = this.stations.find((element) => element.name === name && element.state === state);
+    }
+
+    if (station === undefined) {
+      console.log("ID of: " + name + ", " + state + " not found!");
+      return undefined;
+    }
+
+    return station.id;
+
+  }
 
 }
 
