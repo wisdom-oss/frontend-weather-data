@@ -29,6 +29,11 @@ export class WeatherDataComponent implements OnInit {
     this.getStations();
   }
 
+  /**
+   * get all stations from dwd. 
+   * safe them in stations and add additional info in stationMarkers
+   * Used in map to display stations
+   */
   getStations(): void {
     this.weatherService.getStations("/").subscribe(discovery => {
       this.stations = discovery;
@@ -42,37 +47,22 @@ export class WeatherDataComponent implements OnInit {
     });
   }
 
-  showStations(): void {
-    console.log(this.stations);
-  }
-
-  getWeatherDataByStation(): void {
-    this.weatherService.getWeatherDataByStation("/00044/air_temperature/10_minutes").subscribe(test => {
-      this.weatherData = test;
-      console.log(test);
-    })
-  }
-
-  getWeatherDataByStations(): void {
-    this.weatherService.getWeatherDataByStation("/00044/air_temperature/10_minutes").subscribe({
-      next: (data) => {
-        this.weatherData = data;
-        console.log(this.weatherData);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log("Data retrieval complete");
-      }
-    });
-
-  }
-
+  /**
+   * test function with valid values to check api
+   */
   testWeatherData(): void {
     this.processApiParams("00044", "air_temperature", "10_minutes","1701965435", "1701967435")
   }
 
+  /**
+   * standardized processing function to build the url to retrieve stationary data
+   * @param stationId to find a unique station
+   * @param dataPoint kind of data to retrieve (precipitation etc.)
+   * @param timeResolution timely resolution (1 min, 5 min) to find the correct data
+   * @param from timestamp from when data shall be requested
+   * @param until timestamp until data is requested
+   * @returns if no stationID is used to safe resources
+   */
   processApiParams(stationId: string, dataPoint: string, timeResolution: string, from?: string, until?: string): void {
     if (!stationId) {
       //TODO raise Error here
@@ -83,13 +73,21 @@ export class WeatherDataComponent implements OnInit {
     let endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`
 
     if (from && until) {
-      endpoint = endpoint + `?from=${from}&until=${until}`;
+      endpoint += `?from=${from}&until=${until}`;
       //TODO activate from and until
     } else {
-      console.log("No period given, request will take some time!");
+      console.log("No period specified, request can take longer!");
     }
 
-    this.weatherService.getWeatherDataByStation(endpoint.toString()).subscribe({
+    this.getWeatherDataByStation(endpoint);
+  }
+
+  /**
+   * request the weather service for a station, time resolution and data point
+   * @param url the finished url to request from
+   */
+  getWeatherDataByStation(url: string) {
+    this.weatherService.getWeatherDataByStation(url.toString()).subscribe({
       //TODO Discuss with Tim
       next: (data) => {
         this.weatherData = data;

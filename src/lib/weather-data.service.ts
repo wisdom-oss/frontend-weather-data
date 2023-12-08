@@ -31,6 +31,10 @@ export class WeatherDataService {
 
   getStations(url: string, ctx?: HttpContext): Observable<Stations> {
 
+    if(!url) {
+      return this.handleError("No URL given!");
+    }
+
     let finalUrl = API_PREFIX + url;
 
     return this.http.get<Stations>(finalUrl, {
@@ -41,6 +45,10 @@ export class WeatherDataService {
   }
 
   getWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
+
+    if(!url) {
+      return this.handleError("No URL given!");
+    }
 
     return this.http.get<any>(API_PREFIX + url, {
       responseType: "json",
