@@ -33,5 +33,5 @@ export interface Station {
         coordinates: [number, number]
     },
     // TODO: use better type
-    capabilities: any
+    capabilities: Object
 }

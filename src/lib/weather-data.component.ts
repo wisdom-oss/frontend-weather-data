@@ -15,8 +15,12 @@ import { timeResolutions } from "./dwd-interfaces";
 
 export class WeatherDataComponent implements OnInit {
 
+  capabilities: string[] = ["air_temperature", 'precipitation', 'solar'];
+
+  capability_filters: string[] = [];
+
   heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (80 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   stations: Stations = [];
   stationMarkers: Marker[] = [];
@@ -53,45 +57,48 @@ export class WeatherDataComponent implements OnInit {
   getStations(): void {
     this.weatherService.fetchStations("/").subscribe(discovery => {
       this.stations = discovery;
-      this.stationMarkers = Array.from(this.stations.map(station => {
-        return {
-          coordinates: station.location.coordinates,
-          tooltip: station.id,
-          icon: dwdStationIcon
-        }
-      }));
+      this.createStationMarkers(this.stations);
     });
   }
 
-
-  createBasicBarChart(): void {
-
-    const data = [
-      { year: 2010, count: 10 },
-      { year: 2011, count: 20 },
-      { year: 2012, count: 15 },
-      { year: 2013, count: 25 },
-      { year: 2014, count: 22 },
-      { year: 2015, count: 30 },
-      { year: 2016, count: 28 },
-    ];
-
-    new Chart(
-      document.getElementById('weather') as HTMLCanvasElement,
-      {
-        type: 'bar',
-        data: {
-          labels: data.map(column => column.year),
-          datasets: [
-            {
-              label: 'Acquisitions by year',
-              data: data.map(column => column.count)
-            }
-          ]
-        }
+  /**
+   * help function to create markers on map of dwd component
+   */
+  createStationMarkers(stationList: Stations): void {
+    this.stationMarkers = Array.from(stationList).map(station => {
+      return {
+        coordinates: station.location.coordinates,
+        tooltip: station.name,
+        icon: dwdStationIcon,
+        onClick: () => console.log("works")
       }
-    );
+    })
+  }
 
+  //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
+
+  /**
+   * onClick Event, to push a filter param to an array or remove from it
+   * @param param the param to add/remove
+   */
+  toggleCapability(param: string): void {
+
+    if (this.capability_filters.includes(param)) {
+      this.capability_filters.splice(this.capability_filters.indexOf(param), 1);
+    } else {
+      this.capability_filters.push(param);
+    }
+
+    console.log(this.capability_filters);
+  }
+
+  getStationFilter(): void {
+
+    let filteredList = this.stations.filter(s => {
+      return Object.keys(s.capabilities).some(key => this.capability_filters.includes(key));
+    });
+
+    this.createStationMarkers(filteredList);
   }
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
@@ -101,7 +108,9 @@ export class WeatherDataComponent implements OnInit {
      * test function with valid values to check api
      */
   testWeatherData(): void {
-    this.requestDataforStation("Oldenburg", "Niedersachsen", "air_temperature", "10_minutes", "1701965435", "1701967435")
+    console.log(this.stations);
+    this.requestDataforStation("Oldenburg (A)", "Niedersachsen", "air_temperature", "subdaily")
+    // ,"1601065435", "1701967435"
   }
 
   /**
@@ -118,6 +127,7 @@ export class WeatherDataComponent implements OnInit {
 
     if (id) {
       let url = this.buildUrl(id, dataPoint, timeResolution, from, until);
+      console.log(url);
 
       if (url) {
         this.getWeatherDataByStation(url);
