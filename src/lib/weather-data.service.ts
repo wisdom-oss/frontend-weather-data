@@ -29,9 +29,9 @@ export class WeatherDataService {
 
   constructor(private http: HttpClient) { }
 
-  getStations(url: string, ctx?: HttpContext): Observable<Stations> {
+  fetchStations(url: string, ctx?: HttpContext): Observable<Stations> {
 
-    if(!url) {
+    if (!url) {
       return this.handleError("No URL given!");
     }
 
@@ -44,9 +44,9 @@ export class WeatherDataService {
 
   }
 
-  getWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
+  fetchWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
 
-    if(!url) {
+    if (!url) {
       return this.handleError("No URL given!");
     }
 
