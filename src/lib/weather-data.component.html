@@ -3,9 +3,9 @@
   <h1 class="title has-text-centered is-size-3">
     {{ "weather-data.title.name" | translate }}
   </h1>
-  <div class="box buttons is-centered">
+  <div class="box buttons has-addons is-centered">
     <button
-      class="button is-primary"
+      class="button is-primary is-selected"
       *ngFor="let type of capabilities"
       (click)="toggleCapability(type); getStationFilter()"
     >

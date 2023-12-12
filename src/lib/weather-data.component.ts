@@ -2,9 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { Stations } from "./dwd-interfaces";
-import { Chart } from "chart.js/auto";
-import { timeResolutions } from "./dwd-interfaces";
+import { Stations, Station, timeResolutions } from "./dwd-interfaces";
 
 @Component({
   selector: 'lib-weather-data',
@@ -15,15 +13,17 @@ import { timeResolutions } from "./dwd-interfaces";
 
 export class WeatherDataComponent implements OnInit {
 
-  capabilities: string[] = ["air_temperature", 'precipitation', 'solar'];
-
-  capability_filters: string[] = [];
-
   heightWeatherBox: string = "75vh";
   heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   stations: Stations = [];
   stationMarkers: Marker[] = [];
+
+  // list of kind of data which will be supported in component
+  capabilities: string[] = ["air_temperature", 'precipitation', 'solar'];
+
+  // temporary list of shown capabilities
+  capability_filters: string[] = [];
 
   weatherData: any;
 
@@ -58,7 +58,10 @@ export class WeatherDataComponent implements OnInit {
     this.weatherService.fetchStations("/").subscribe(discovery => {
       this.stations = discovery;
       this.createStationMarkers(this.stations);
+      console.log(this.stations);
     });
+
+
   }
 
   /**
@@ -68,11 +71,29 @@ export class WeatherDataComponent implements OnInit {
     this.stationMarkers = Array.from(stationList).map(station => {
       return {
         coordinates: station.location.coordinates,
-        tooltip: station.name,
+        tooltip: this.createMarkerTooltip(station),
         icon: dwdStationIcon,
         onClick: () => console.log("works")
       }
     })
+  }
+
+  createMarkerTooltip(station: Station): string {
+
+    let capabilities_string: string = "";
+
+    this.capability_filters.forEach(element => {
+      let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
+      capabilities_string += temp;
+    })
+
+    //TODO center station.name (list with heading)
+    let tooltip_base: string = `${station.name} <br> ${capabilities_string}`;
+
+
+
+
+    return tooltip_base;
   }
 
   //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
@@ -95,10 +116,18 @@ export class WeatherDataComponent implements OnInit {
   getStationFilter(): void {
 
     let filteredList = this.stations.filter(s => {
-      return Object.keys(s.capabilities).some(key => this.capability_filters.includes(key));
+      const stationKeys = Object.keys(s.capabilities);
+      return this.capability_filters.every(key => stationKeys.includes(key));
     });
 
-    this.createStationMarkers(filteredList);
+
+    if (filteredList.length) {
+      this.createStationMarkers(filteredList);
+    } else {
+      this.createStationMarkers(this.stations);
+    }
+
+
   }
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
