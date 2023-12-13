@@ -3,15 +3,40 @@
   <h1 class="title has-text-centered is-size-3">
     {{ "weather-data.title.name" | translate }}
   </h1>
-  <div class="box buttons has-addons is-centered">
-    <button
-      class="button is-primary is-selected"
-      *ngFor="let type of capabilities"
-      (click)="toggleCapability(type); getStationFilter()"
-    >
-      {{ type }}
-    </button>
+
+  <div class="box">
+    <div class="columns">
+      <div class="column">
+        <div class="buttons has-addons">
+          <button
+            class="button is-primary is-selected"
+            *ngFor="let type of capability"
+            (click)="toggleCapability(type); filterStations()"
+          >
+            {{ type }}
+          </button>
+        </div>
+      </div>
+      <div class="column is-narrow">
+        <div class="buttons is-pulled-right">
+          <button class="button is-info" (click)="filterHistorical()">
+            Show only up-to-date stations
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="field">
+    <input
+      id="switchRoundedDefault"
+      type="checkbox"
+      name="switchRoundedDefault"
+      class="switch is-rounded"
+    />
+    <label for="switchRoundedDefault">Filter Historical Stations</label>
+  </div>
+
   <div class="card block">
     <div class="card-content p-0 is-clipped">
       <map
@@ -23,14 +48,6 @@
         zoom="6"
       ></map>
     </div>
-  </div>
-</div>
-<div class="box">
-  <h1 class="title has-text-centered is-size-3">Choose Resolution</h1>
-  <div class="buttons is-centered">
-    <button class="button is-primary" *ngFor="let res of timeResolutions">
-      {{ res }}
-    </button>
   </div>
 </div>
 <div class="box">

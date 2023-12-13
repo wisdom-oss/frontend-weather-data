@@ -1,9 +1,4 @@
 /**
- * Array of Stations
- */
-export type Stations = Station[];
-
-/**
  * station object
  */
 export interface Station {
@@ -36,4 +31,13 @@ export enum TimeResolution {
     Monthly = "monthly",
     Annual = "annual",
     MultiAnnual = "multi_annual",
+}
+
+/**
+ * possible time resolutions
+ */
+export enum DataCapability {
+    Temperature = "air_temperature",
+    Precipitation = "precipitation",
+    Solar = "solar"
 }

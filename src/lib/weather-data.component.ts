@@ -2,7 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { Stations, Station } from "./dwd-interfaces";
+import { Station, DataCapability } from "./dwd-interfaces";
+import { filter } from "rxjs";
 
 @Component({
   selector: 'lib-weather-data',
@@ -16,37 +17,47 @@ export class WeatherDataComponent implements OnInit {
   heightWeatherBox: string = "75vh";
   heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
-  stations: Stations = [];
+  // save all stations from dwd
+  stations: Station[] = [];
+
+  // temporary list of stations having certain data capabilities
+  filteredStations: Station[] = [];
+
+  // save all markers from stations
   stationMarkers: Marker[] = [];
 
+  // Kind of capabilities to use in the dwd
+  capability: string[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar];
+
   // temporary list of shown capabilities
-  capability_filters: Array<string> = ["air_temperature", "precipitation", "solar"];
+  cap_filters: string[] = [];
 
   weatherData: any;
 
   constructor(public weatherService: WeatherDataService) { }
 
   ngOnInit(): void {
-    this.getStations();
+    this.getAllStations();
   }
 
   /**
-   * get all stations from dwd. 
-   * safe them in stations and add additional info in stationMarkers
-   * Used in map to display stations
+   * get all station data from dwd. 
+   * safe them in stations
    */
-  getStations(): void {
+  getAllStations(): void {
     this.weatherService.fetchStations("/").subscribe(stationData => {
       this.stations = stationData;
       this.createStationMarkers(this.stations);
       console.log(this.stations);
     });
+
+
   }
 
   /**
-   * help function to create markers on map of dwd component
+   * create map markers based on stations
    */
-  createStationMarkers(stations: Stations): void {
+  createStationMarkers(stations: Station[]): void {
     this.stationMarkers = stations.map(station => {
       return {
         coordinates: station.location.coordinates,
@@ -57,20 +68,24 @@ export class WeatherDataComponent implements OnInit {
     })
   }
 
+  /**
+   * create a new tooltip for every station on map
+   * @param station to create new tooltip from
+   * @returns the tooltip as string
+   */
   createMarkerTooltip(station: Station): string {
 
-    let capabilities_string: string = "";
+    console.log(station.capabilities[0]);
 
-    //this.capability_filters.forEach(element => {
-    //  let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
-    // capabilities_string += temp;
-    //})
+    let tooltip: string = "";
+
+    this.cap_filters.forEach(element => {
+      //let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
+      //tooltip += temp;
+    })
 
     //TODO center station.name (list with heading)
-    let tooltip_base: string = `${station.name} <br> ${capabilities_string}`;
-
-
-
+    let tooltip_base: string = `${station.name} <br> ${tooltip}`;
 
     return tooltip_base;
   }
@@ -83,30 +98,44 @@ export class WeatherDataComponent implements OnInit {
    */
   toggleCapability(param: string): void {
 
-    if (this.capability_filters.includes(param)) {
-      this.capability_filters.splice(this.capability_filters.indexOf(param), 1);
+    if (this.cap_filters.includes(param)) {
+      this.cap_filters.splice(this.cap_filters.indexOf(param), 1);
     } else {
-      this.capability_filters.push(param);
+      this.cap_filters.push(param);
     }
-
-    console.log(this.capability_filters);
   }
 
-  getStationFilter(): void {
+  /**
+   * filter the station array based on the cap_filters array
+   */
+  filterStations(): void {
 
-    let filteredList = this.stations.filter(s => {
-      const stationKeys = Object.keys(s.capabilities);
-      return this.capability_filters.every(key => stationKeys.includes(key));
-    });
+    this.filteredStations = this.stations.filter(station => {
+      return this.cap_filters.every(key =>
+        station.capabilities.some(capability => capability.dataType === key)
+      );
+    })
 
+    this.createStationMarkers(this.filteredStations);
+  }
 
-    if (filteredList.length) {
-      this.createStationMarkers(filteredList);
-    } else {
-      this.createStationMarkers(this.stations);
-    }
+  filterResolutions(): void {
 
+  }
 
+  filterHistorical(): void {
+    let onlyRecent: Station[] = []
+
+    onlyRecent = this.stations.filter(station => {
+      return !station.historical
+    })
+
+    this.createStationMarkers(onlyRecent);
+    console.log(onlyRecent);
+  }
+
+  handleSwitchButton(): void {
+    //TODO Implement
   }
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
