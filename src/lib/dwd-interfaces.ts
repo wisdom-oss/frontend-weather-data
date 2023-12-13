@@ -1,37 +1,39 @@
-export interface timeResolutions {
-    "1_minute": string;
-    "5_minutes": string;
-    "10_minutes": string;
-    "hourly": string;
-    "subdaily": string;
-    "daily": string;
-    "monthly": string;
-    "annual": string;
-    "multi-annual": string;
-};
-
-export interface dataPoints {
-    "air_temperature": string;
-    "precipitation": string;
-    "solar": string;
-    "soil_temperature": string;
-    "cloud": string;
-    "dew_point": string;
-    "moisture": string;
-    "pressure": string;
-    "sun": string;
-}
-
+/**
+ * Array of Stations
+ */
 export type Stations = Station[];
 
+/**
+ * station object
+ */
 export interface Station {
-    id: string,
-    name: string,
-    state: string,
+    id: string;
+    name: string;
+    state: string;
     location: {
         type: "Point",
         coordinates: [number, number]
-    },
-    // TODO: use better type
-    capabilities: Record<string, any>
+    };
+    historical: boolean;
+    capabilities: {
+        dataType: string;
+        resolution: TimeResolution;
+        availableFrom: string; // Assuming ISO 8601 date-time format, example: "2023-01-01T00:00:00Z"
+        availableUntil: string; // Assuming ISO 8601 date-time format, example: "2023-02-01T00:00:00Z"
+    }[];
+}
+
+/**
+ * possible time resolutions
+ */
+export enum TimeResolution {
+    OneMinute = "1_minute",
+    FiveMinutes = "5_minutes",
+    TenMinutes = "10_minutes",
+    Hourly = "hourly",
+    Subdaily = "subdaily",
+    Daily = "daily",
+    Monthly = "monthly",
+    Annual = "annual",
+    MultiAnnual = "multi_annual",
 }

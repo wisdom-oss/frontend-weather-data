@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { Stations, Station, timeResolutions } from "./dwd-interfaces";
+import { Stations, Station } from "./dwd-interfaces";
 
 @Component({
   selector: 'lib-weather-data',
@@ -19,34 +19,15 @@ export class WeatherDataComponent implements OnInit {
   stations: Stations = [];
   stationMarkers: Marker[] = [];
 
-  // list of kind of data which will be supported in component
-  capabilities: string[] = ["air_temperature", 'precipitation', 'solar'];
-
   // temporary list of shown capabilities
-  capability_filters: string[] = [];
+  capability_filters: Array<string> = ["air_temperature", "precipitation", "solar"];
 
   weatherData: any;
-
-  timeResolutions: (keyof timeResolutions)[] = [
-    "1_minute",
-    "5_minutes",
-    "10_minutes",
-    "hourly",
-    "subdaily",
-    "daily",
-    "monthly",
-    "annual",
-    "multi-annual"
-  ];
 
   constructor(public weatherService: WeatherDataService) { }
 
   ngOnInit(): void {
     this.getStations();
-  }
-
-  test(): void {
-    console.log(this.timeResolutions);
   }
 
   /**
@@ -55,23 +36,21 @@ export class WeatherDataComponent implements OnInit {
    * Used in map to display stations
    */
   getStations(): void {
-    this.weatherService.fetchStations("/").subscribe(discovery => {
-      this.stations = discovery;
+    this.weatherService.fetchStations("/").subscribe(stationData => {
+      this.stations = stationData;
       this.createStationMarkers(this.stations);
       console.log(this.stations);
     });
-
-
   }
 
   /**
    * help function to create markers on map of dwd component
    */
-  createStationMarkers(stationList: Stations): void {
-    this.stationMarkers = Array.from(stationList).map(station => {
+  createStationMarkers(stations: Stations): void {
+    this.stationMarkers = stations.map(station => {
       return {
         coordinates: station.location.coordinates,
-        tooltip: this.createMarkerTooltip(station),
+        tooltip: station.name,
         icon: dwdStationIcon,
         onClick: () => console.log("works")
       }
@@ -82,10 +61,10 @@ export class WeatherDataComponent implements OnInit {
 
     let capabilities_string: string = "";
 
-    this.capability_filters.forEach(element => {
-      let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
-      capabilities_string += temp;
-    })
+    //this.capability_filters.forEach(element => {
+    //  let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
+    // capabilities_string += temp;
+    //})
 
     //TODO center station.name (list with heading)
     let tooltip_base: string = `${station.name} <br> ${capabilities_string}`;

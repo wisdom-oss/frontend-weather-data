@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpContext } from "@angular/common/http";
-import { Router } from "@angular/router";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER, USE_CACHE } from "common";
 import { Observable } from "rxjs";
 import { Stations } from "./dwd-interfaces";
