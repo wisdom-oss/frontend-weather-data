@@ -120,7 +120,7 @@ export class WeatherDataComponent implements OnInit {
     } else {
       tmparray = this.stations;
     }
-    //TODO make it work with historical filter
+    //TODO make it work with historical filter -> filter every time a button is pressed on the same array.
 
     this.filteredStations = tmparray.filter(station => {
       return this.cap_filters.every(key =>
