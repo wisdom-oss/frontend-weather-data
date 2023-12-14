@@ -20,6 +20,8 @@ export class WeatherDataComponent implements OnInit {
   // save all stations from dwd
   stations: Station[] = [];
 
+  recentStations: Station[] = [];
+
   // temporary list of stations having certain data capabilities
   filteredStations: Station[] = [];
 
@@ -33,6 +35,8 @@ export class WeatherDataComponent implements OnInit {
   cap_filters: string[] = [];
 
   weatherData: any;
+
+  historicalFiltered: boolean = false;
 
   constructor(public weatherService: WeatherDataService) { }
 
@@ -50,8 +54,6 @@ export class WeatherDataComponent implements OnInit {
       this.createStationMarkers(this.stations);
       console.log(this.stations);
     });
-
-
   }
 
   /**
@@ -103,14 +105,24 @@ export class WeatherDataComponent implements OnInit {
     } else {
       this.cap_filters.push(param);
     }
+
+    console.log(this.cap_filters);
   }
 
   /**
    * filter the station array based on the cap_filters array
    */
   filterStations(): void {
+    let tmparray = []
 
-    this.filteredStations = this.stations.filter(station => {
+    if (this.historicalFiltered) {
+      tmparray = this.filteredStations;
+    } else {
+      tmparray = this.stations;
+    }
+    //TODO make it work with historical filter
+
+    this.filteredStations = tmparray.filter(station => {
       return this.cap_filters.every(key =>
         station.capabilities.some(capability => capability.dataType === key)
       );
@@ -119,23 +131,25 @@ export class WeatherDataComponent implements OnInit {
     this.createStationMarkers(this.filteredStations);
   }
 
-  filterResolutions(): void {
-
-  }
-
   filterHistorical(): void {
-    let onlyRecent: Station[] = []
 
-    onlyRecent = this.stations.filter(station => {
-      return !station.historical
-    })
+    if (!this.recentStations.length) {
+      this.recentStations = this.stations.filter(station => {
+        return !station.historical
+      })
+    }
 
-    this.createStationMarkers(onlyRecent);
-    console.log(onlyRecent);
+    this.createStationMarkers(this.recentStations);
   }
 
-  handleSwitchButton(): void {
-    //TODO Implement
+  toggleHistoricalFilter(): void {
+    this.historicalFiltered = !this.historicalFiltered;
+
+    if (this.historicalFiltered) {
+      this.filterHistorical();
+    } else {
+      this.createStationMarkers(this.stations);
+    }
   }
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------

@@ -17,24 +17,53 @@
           </button>
         </div>
       </div>
-      <div class="column is-narrow">
-        <div class="buttons is-pulled-right">
-          <button class="button is-info" (click)="filterHistorical()">
-            Show only up-to-date stations
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
-  <div class="field">
-    <input
-      id="switchRoundedDefault"
-      type="checkbox"
-      name="switchRoundedDefault"
-      class="switch is-rounded"
-    />
-    <label for="switchRoundedDefault">Filter Historical Stations</label>
+  <div class="field is-horizontal">
+    <div class="field-body">
+      <div class="field">
+        <input
+          id="historicalSwitch"
+          type="checkbox"
+          name="historicalSwitch"
+          class="switch is-rounded"
+          (change)="toggleHistoricalFilter()"
+        />
+        <label for="historicalSwitch">Filter Historical Stations</label>
+      </div>
+
+      <div class="field">
+        <input
+          id="temperatureSwitch"
+          type="checkbox"
+          name="temperatureSwitch"
+          class="switch is-rounded"
+          (change)="toggleCapability('air_temperature'); filterStations()"
+        />
+        <label for="temperatureSwitch">Filter Temperature</label>
+      </div>
+      <div class="field">
+        <input
+          id="precipitationSwitch"
+          type="checkbox"
+          name="precipitationSwitch"
+          class="switch is-rounded"
+          (change)="toggleCapability('precipitation'); filterStations()"
+        />
+        <label for="precipitationSwitch">Filter Precipitation</label>
+      </div>
+      <div class="field">
+        <input
+          id="solarSwitch"
+          type="checkbox"
+          name="solarSwitch"
+          class="switch is-rounded"
+          (change)="toggleCapability('solar'); filterStations()"
+        />
+        <label for="solarSwitch">Filter Solar Hours</label>
+      </div>
+    </div>
   </div>
 
   <div class="card block">
