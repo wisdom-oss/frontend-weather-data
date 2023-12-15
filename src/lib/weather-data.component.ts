@@ -3,7 +3,6 @@ import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
 import { Station, DataCapability } from "./dwd-interfaces";
-import { filter } from "rxjs";
 
 @Component({
   selector: 'lib-weather-data',
@@ -20,23 +19,19 @@ export class WeatherDataComponent implements OnInit {
   // save all stations from dwd
   stations: Station[] = [];
 
-  recentStations: Station[] = [];
-
-  // temporary list of stations having certain data capabilities
-  filteredStations: Station[] = [];
-
   // save all markers from stations
   stationMarkers: Marker[] = [];
 
   // Kind of capabilities to use in the dwd
   capability: string[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar];
 
-  // temporary list of shown capabilities
-  cap_filters: string[] = [];
-
   weatherData: any;
 
   historicalFiltered: boolean = false;
+  temperatureFiltered: boolean = false;
+  precipitationFiltered: boolean = false;
+  solarHoursFiltered: boolean = false;
+
 
   constructor(public weatherService: WeatherDataService) { }
 
@@ -81,10 +76,10 @@ export class WeatherDataComponent implements OnInit {
 
     let tooltip: string = "";
 
-    this.cap_filters.forEach(element => {
-      //let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
-      //tooltip += temp;
-    })
+    /* this.cap_filters.forEach(element => {
+      let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
+      tooltip += temp;
+    }) */
 
     //TODO center station.name (list with heading)
     let tooltip_base: string = `${station.name} <br> ${tooltip}`;
@@ -94,25 +89,58 @@ export class WeatherDataComponent implements OnInit {
 
   //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
-  /**
-   * onClick Event, to push a filter param to an array or remove from it
-   * @param param the param to add/remove
-   */
-  toggleCapability(param: string): void {
-
-    if (this.cap_filters.includes(param)) {
-      this.cap_filters.splice(this.cap_filters.indexOf(param), 1);
-    } else {
-      this.cap_filters.push(param);
-    }
-
-    console.log(this.cap_filters);
+  filterHistorical(): void {
+    this.historicalFiltered = !this.historicalFiltered;
   }
 
-  /**
+  filterTemperature(): void {
+    this.temperatureFiltered = !this.temperatureFiltered;
+  }
+
+  filterPrecipitation(): void {
+    this.precipitationFiltered = !this.precipitationFiltered;
+  }
+
+  filterSolarHours(): void {
+    this.solarHoursFiltered = !this.solarHoursFiltered;
+  }
+
+  showStations(): void {
+    let filteredStations: Station[] = this.stations;
+
+    if (this.historicalFiltered) {
+      filteredStations = filteredStations.filter(station => {
+        return !station.historical
+      })
+    }
+
+    if (this.temperatureFiltered) {
+      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Temperature);
+    }
+
+    if (this.precipitationFiltered) {
+      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Precipitation);
+    }
+
+    if (this.solarHoursFiltered) {
+      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Solar);
+    }
+
+    this.createStationMarkers(filteredStations);
+  }
+
+  filterStationsByDataType(stations: Station[], dataTypeToFilter: string): Station[] {
+    return stations.filter((station) =>
+      station.capabilities.some((capability) => capability.dataType === dataTypeToFilter)
+    );
+  }
+
+
+
+  /* *
    * filter the station array based on the cap_filters array
    */
-  filterStations(): void {
+  /* filterStations(): void {
     let tmparray = []
 
     if (this.historicalFiltered) {
@@ -134,15 +162,13 @@ export class WeatherDataComponent implements OnInit {
   filterHistorical(): void {
 
     if (!this.recentStations.length) {
-      this.recentStations = this.stations.filter(station => {
-        return !station.historical
-      })
+      this.recentStations 
     }
 
     this.createStationMarkers(this.recentStations);
-  }
+  }  */
 
-  toggleHistoricalFilter(): void {
+  /* toggleHistoricalFilter(): void {
     this.historicalFiltered = !this.historicalFiltered;
 
     if (this.historicalFiltered) {

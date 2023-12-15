@@ -4,22 +4,6 @@
     {{ "weather-data.title.name" | translate }}
   </h1>
 
-  <div class="box">
-    <div class="columns">
-      <div class="column">
-        <div class="buttons has-addons">
-          <button
-            class="button is-primary is-selected"
-            *ngFor="let type of capability"
-            (click)="toggleCapability(type); filterStations()"
-          >
-            {{ type }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="field is-horizontal">
     <div class="field-body">
       <div class="field">
@@ -28,7 +12,7 @@
           type="checkbox"
           name="historicalSwitch"
           class="switch is-rounded"
-          (change)="toggleHistoricalFilter()"
+          (change)="filterHistorical(); showStations()"
         />
         <label for="historicalSwitch">Filter Historical Stations</label>
       </div>
@@ -39,7 +23,7 @@
           type="checkbox"
           name="temperatureSwitch"
           class="switch is-rounded"
-          (change)="toggleCapability('air_temperature'); filterStations()"
+          (change)="filterTemperature(); showStations()"
         />
         <label for="temperatureSwitch">Filter Temperature</label>
       </div>
@@ -49,7 +33,7 @@
           type="checkbox"
           name="precipitationSwitch"
           class="switch is-rounded"
-          (change)="toggleCapability('precipitation'); filterStations()"
+          (change)="filterPrecipitation(); showStations()"
         />
         <label for="precipitationSwitch">Filter Precipitation</label>
       </div>
@@ -59,7 +43,7 @@
           type="checkbox"
           name="solarSwitch"
           class="switch is-rounded"
-          (change)="toggleCapability('solar'); filterStations()"
+          (change)="filterSolarHours(); showStations()"
         />
         <label for="solarSwitch">Filter Solar Hours</label>
       </div>
