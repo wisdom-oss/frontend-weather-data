@@ -39,5 +39,8 @@ export enum TimeResolution {
 export enum DataCapability {
     Temperature = "air_temperature",
     Precipitation = "precipitation",
-    Solar = "solar"
+    Solar = "solar",
+    Soil = "soil_temperature",
+    Pressure = "pressure",
+    Sun = "sun"
 }

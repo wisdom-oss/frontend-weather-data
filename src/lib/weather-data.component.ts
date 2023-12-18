@@ -3,8 +3,6 @@ import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
 import { Station, DataCapability } from "./dwd-interfaces";
-import { filter } from "rxjs";
-import { Data } from "web-ifc-three/IFC/components/sequence/Data";
 
 @Component({
   selector: 'lib-weather-data',
@@ -16,7 +14,7 @@ import { Data } from "web-ifc-three/IFC/components/sequence/Data";
 export class WeatherDataComponent implements OnInit {
 
   heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherMap: string = (60 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   // save all stations from dwd
   stations: Station[] = [];
@@ -24,15 +22,13 @@ export class WeatherDataComponent implements OnInit {
   // save all markers from stations
   stationMarkers: Marker[] = [];
 
-  // Kind of capabilities to use in the dwd
-  capability: string[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar];
-
   weatherData: any;
 
   historicalFiltered: boolean = false;
-  temperatureFiltered: boolean = false;
-  precipitationFiltered: boolean = false;
-  solarHoursFiltered: boolean = false;
+
+  filterStates: Map<DataCapability, boolean> = new Map<DataCapability, boolean>();
+
+  activatedFilters: DataCapability[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar, DataCapability.Soil, DataCapability.Sun, DataCapability.Pressure]
 
   object = {
     name: "Test3",
@@ -44,6 +40,13 @@ export class WeatherDataComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllStations();
+    this.setFilterMap();
+  }
+
+  setFilterMap(): void {
+    this.activatedFilters.forEach(item => {
+      this.filterStates.set(item, false);
+    })
   }
 
   /**
@@ -81,17 +84,11 @@ export class WeatherDataComponent implements OnInit {
 
     let tooltip_base: string = `<div class="has-text-centered has-text-weight-bold">${station.name}</div>`;
 
-    if (this.temperatureFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Temperature);
-    }
-
-    if (this.precipitationFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Precipitation);
-    }
-
-    if (this.solarHoursFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Solar);
-    }
+    this.filterStates.forEach((filterActive, filterOption) => {
+      if (filterActive) {
+        tooltip_base += this.filterTooltip(station, filterOption);
+      }
+    })
 
     return tooltip_base;
   }
@@ -109,12 +106,7 @@ export class WeatherDataComponent implements OnInit {
 
   //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
-  /**
-   * filter the array of stations to accomodate the filters used
-   * in last step create new station markers to make them visible.
-   * filters can be activated interchangeably
-   */
-  showStations(): void {
+  showStationsNew(): void {
     let filteredStations: Station[] = this.stations;
 
     if (this.historicalFiltered) {
@@ -123,20 +115,18 @@ export class WeatherDataComponent implements OnInit {
       })
     }
 
-    if (this.temperatureFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Temperature);
-    }
+    this.filterStates.forEach((filterValue, filterKey) => {
 
-    if (this.precipitationFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Precipitation);
-    }
+      if (filterValue) {
+        filteredStations = this.filterStationsByDataType(filteredStations, filterKey);
+      }
 
-    if (this.solarHoursFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Solar);
-    }
+    });
 
     this.createStationMarkers(filteredStations);
+
   }
+
 
   /**
    * searches an array of stations for every station, which holds a certain datatype in their
@@ -151,47 +141,16 @@ export class WeatherDataComponent implements OnInit {
     );
   }
 
-  switchFilter(filterType: "historical" | DataCapability): void {
+  switchFilterOption(filterOption: DataCapability): void {
+    let bool = this.filterStates.get(filterOption);
+    console.log(bool);
 
-    switch (filterType) {
-      case DataCapability.Temperature: {
-        this.temperatureFiltered = !this.temperatureFiltered;
-        break;
-      }
-      case DataCapability.Precipitation: {
-        this.precipitationFiltered = !this.precipitationFiltered;
-        console.log(this.precipitationFiltered);
-        break;
-      }
-      case DataCapability.Solar: {
-        this.solarHoursFiltered = !this.solarHoursFiltered;
-        console.log(this.solarHoursFiltered);
 
-        break;
-      }
-      default: {
-        if (filterType === "historical") {
-          this.historicalFiltered = !this.historicalFiltered;
-          return;
-        }
-      }
-    }
+    this.filterStates.set(filterOption, !bool);
   }
 
   filterHistorical(): void {
     this.historicalFiltered = !this.historicalFiltered;
-  }
-
-  filterTemperature(): void {
-    this.temperatureFiltered = !this.temperatureFiltered;
-  }
-
-  filterPrecipitation(): void {
-    this.precipitationFiltered = !this.precipitationFiltered;
-  }
-
-  filterSolarHours(): void {
-    this.solarHoursFiltered = !this.solarHoursFiltered;
   }
 
   //------------------------------------------------------------------------------ Station Tooltip and Download    ----------------------------------
