@@ -63,6 +63,26 @@
     </div>
   </div>
 </div>
+
+<div class="box">
+  <h1 class="title has-text-centered is-size-3">StationShow</h1>
+  <section class="section">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-3" ng-repeat="object in objects">
+          <div class="box">
+            <!-- Customize the content based on your object properties -->
+            <h1 class="title">{{ object.name }}</h1>
+            <p>{{ object.description }}</p>
+            <p>Other information: {{ object.otherInfo }}</p>
+            <!-- Add more content as needed -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <div class="box">
   <h1 class="title has-text-centered is-size-3">Testgelände</h1>
   <button class="button is-primary" (click)="testWeatherData()">

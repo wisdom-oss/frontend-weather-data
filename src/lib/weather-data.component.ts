@@ -3,6 +3,8 @@ import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
 import { Station, DataCapability } from "./dwd-interfaces";
+import { filter } from "rxjs";
+import { Data } from "web-ifc-three/IFC/components/sequence/Data";
 
 @Component({
   selector: 'lib-weather-data',
@@ -32,6 +34,11 @@ export class WeatherDataComponent implements OnInit {
   precipitationFiltered: boolean = false;
   solarHoursFiltered: boolean = false;
 
+  object = {
+    name: "Test3",
+    description: "here are some information",
+    otherInfo: "useless other stuff"
+  }
 
   constructor(public weatherService: WeatherDataService) { }
 
@@ -58,9 +65,9 @@ export class WeatherDataComponent implements OnInit {
     this.stationMarkers = stations.map(station => {
       return {
         coordinates: station.location.coordinates,
-        tooltip: station.name,
+        tooltip: this.createMarkerTooltip(station),
         icon: dwdStationIcon,
-        onClick: () => console.log("works")
+        onClick: () => this.showSingleStation(station)
       }
     })
   }
@@ -72,39 +79,41 @@ export class WeatherDataComponent implements OnInit {
    */
   createMarkerTooltip(station: Station): string {
 
-    console.log(station.capabilities[0]);
+    let tooltip_base: string = `<div class="has-text-centered has-text-weight-bold">${station.name}</div>`;
 
-    let tooltip: string = "";
+    if (this.temperatureFiltered) {
+      tooltip_base += this.filterTooltip(station, DataCapability.Temperature);
+    }
 
-    /* this.cap_filters.forEach(element => {
-      let temp: string = `${element}: ${(station.capabilities)[element]} <br>`;
-      tooltip += temp;
-    }) */
+    if (this.precipitationFiltered) {
+      tooltip_base += this.filterTooltip(station, DataCapability.Precipitation);
+    }
 
-    //TODO center station.name (list with heading)
-    let tooltip_base: string = `${station.name} <br> ${tooltip}`;
+    if (this.solarHoursFiltered) {
+      tooltip_base += this.filterTooltip(station, DataCapability.Solar);
+    }
 
     return tooltip_base;
   }
 
+  filterTooltip(station: Station, dataType: string): string {
+    let res = station.capabilities
+      .filter(element => element.dataType === dataType)
+      .map(element => element.resolution).join("<br>");
+
+    return `<div class="has-text-centered">
+            <span class="has-text-weight-bold">${dataType}:</span> <br>
+            <span class="has-text-weight-normal">${res}</span> <br>
+            </div>`;
+  }
+
   //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
-  filterHistorical(): void {
-    this.historicalFiltered = !this.historicalFiltered;
-  }
-
-  filterTemperature(): void {
-    this.temperatureFiltered = !this.temperatureFiltered;
-  }
-
-  filterPrecipitation(): void {
-    this.precipitationFiltered = !this.precipitationFiltered;
-  }
-
-  filterSolarHours(): void {
-    this.solarHoursFiltered = !this.solarHoursFiltered;
-  }
-
+  /**
+   * filter the array of stations to accomodate the filters used
+   * in last step create new station markers to make them visible.
+   * filters can be activated interchangeably
+   */
   showStations(): void {
     let filteredStations: Station[] = this.stations;
 
@@ -129,54 +138,70 @@ export class WeatherDataComponent implements OnInit {
     this.createStationMarkers(filteredStations);
   }
 
+  /**
+   * searches an array of stations for every station, which holds a certain datatype in their
+   * capabilities attribute
+   * @param stations array to search in
+   * @param dataTypeToFilter to search for
+   * @returns array of stations with the searched datatype
+   */
   filterStationsByDataType(stations: Station[], dataTypeToFilter: string): Station[] {
     return stations.filter((station) =>
       station.capabilities.some((capability) => capability.dataType === dataTypeToFilter)
     );
   }
 
+  switchFilter(filterType: "historical" | DataCapability): void {
 
+    switch (filterType) {
+      case DataCapability.Temperature: {
+        this.temperatureFiltered = !this.temperatureFiltered;
+        break;
+      }
+      case DataCapability.Precipitation: {
+        this.precipitationFiltered = !this.precipitationFiltered;
+        console.log(this.precipitationFiltered);
+        break;
+      }
+      case DataCapability.Solar: {
+        this.solarHoursFiltered = !this.solarHoursFiltered;
+        console.log(this.solarHoursFiltered);
 
-  /* *
-   * filter the station array based on the cap_filters array
-   */
-  /* filterStations(): void {
-    let tmparray = []
-
-    if (this.historicalFiltered) {
-      tmparray = this.filteredStations;
-    } else {
-      tmparray = this.stations;
+        break;
+      }
+      default: {
+        if (filterType === "historical") {
+          this.historicalFiltered = !this.historicalFiltered;
+          return;
+        }
+      }
     }
-    //TODO make it work with historical filter -> filter every time a button is pressed on the same array.
-
-    this.filteredStations = tmparray.filter(station => {
-      return this.cap_filters.every(key =>
-        station.capabilities.some(capability => capability.dataType === key)
-      );
-    })
-
-    this.createStationMarkers(this.filteredStations);
   }
 
   filterHistorical(): void {
-
-    if (!this.recentStations.length) {
-      this.recentStations 
-    }
-
-    this.createStationMarkers(this.recentStations);
-  }  */
-
-  /* toggleHistoricalFilter(): void {
     this.historicalFiltered = !this.historicalFiltered;
-
-    if (this.historicalFiltered) {
-      this.filterHistorical();
-    } else {
-      this.createStationMarkers(this.stations);
-    }
   }
+
+  filterTemperature(): void {
+    this.temperatureFiltered = !this.temperatureFiltered;
+  }
+
+  filterPrecipitation(): void {
+    this.precipitationFiltered = !this.precipitationFiltered;
+  }
+
+  filterSolarHours(): void {
+    this.solarHoursFiltered = !this.solarHoursFiltered;
+  }
+
+  //------------------------------------------------------------------------------ Station Tooltip and Download    ----------------------------------
+
+  showSingleStation(station: Station): void {
+    this.object.name = station.name;
+    this.object.description = station.id;
+    this.object.otherInfo = station.historical.toString();
+  }
+
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 
