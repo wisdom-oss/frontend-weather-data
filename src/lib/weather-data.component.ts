@@ -13,8 +13,8 @@ import { Station, DataCapability } from "./dwd-interfaces";
 
 export class WeatherDataComponent implements OnInit {
 
-  heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (60 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherBox: string = "80vh";
+  heightWeatherMap: string = (75 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   // save all stations from dwd
   stations: Station[] = [];
@@ -28,21 +28,20 @@ export class WeatherDataComponent implements OnInit {
 
   filterStates: Map<DataCapability, boolean> = new Map<DataCapability, boolean>();
 
-  activatedFilters: DataCapability[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar, DataCapability.Soil, DataCapability.Sun, DataCapability.Pressure]
+  activatedFilters: DataCapability[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar]
 
-  object = {
-    name: "Test3",
-    description: "here are some information",
-    otherInfo: "useless other stuff"
-  }
+  station: Station | undefined;
 
   constructor(public weatherService: WeatherDataService) { }
 
   ngOnInit(): void {
-    this.getAllStations();
     this.setFilterMap();
+    this.getAllStations();
   }
 
+  /**
+   * populates the filterMap (which determines the switches to appear for map) using the activatedFilters array
+   */
   setFilterMap(): void {
     this.activatedFilters.forEach(item => {
       this.filterStates.set(item, false);
@@ -70,7 +69,7 @@ export class WeatherDataComponent implements OnInit {
         coordinates: station.location.coordinates,
         tooltip: this.createMarkerTooltip(station),
         icon: dwdStationIcon,
-        onClick: () => this.showSingleStation(station)
+        onClick: () => this.station = station
       }
     })
   }
@@ -106,9 +105,8 @@ export class WeatherDataComponent implements OnInit {
 
   //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
-  showStationsNew(): void {
+  showStations(): void {
     let filteredStations: Station[] = this.stations;
-
     if (this.historicalFiltered) {
       filteredStations = filteredStations.filter(station => {
         return !station.historical
@@ -116,17 +114,22 @@ export class WeatherDataComponent implements OnInit {
     }
 
     this.filterStates.forEach((filterValue, filterKey) => {
-
       if (filterValue) {
         filteredStations = this.filterStationsByDataType(filteredStations, filterKey);
       }
-
     });
-
     this.createStationMarkers(filteredStations);
 
   }
 
+  /**
+   * switches filterOption in filterStates map to reflect which filters are active
+   * @param filterOption dataCapability to switch state of filtering
+   */
+  switchFilterOption(filterOption: DataCapability): void {
+    let bool = this.filterStates.get(filterOption);
+    this.filterStates.set(filterOption, !bool);
+  }
 
   /**
    * searches an array of stations for every station, which holds a certain datatype in their
@@ -141,29 +144,11 @@ export class WeatherDataComponent implements OnInit {
     );
   }
 
-  switchFilterOption(filterOption: DataCapability): void {
-    let bool = this.filterStates.get(filterOption);
-    console.log(bool);
-
-
-    this.filterStates.set(filterOption, !bool);
-  }
-
   filterHistorical(): void {
     this.historicalFiltered = !this.historicalFiltered;
   }
 
-  //------------------------------------------------------------------------------ Station Tooltip and Download    ----------------------------------
-
-  showSingleStation(station: Station): void {
-    this.object.name = station.name;
-    this.object.description = station.id;
-    this.object.otherInfo = station.historical.toString();
-  }
-
-
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
-
 
   /**
      * test function with valid values to check api

@@ -3,79 +3,87 @@
   <h1 class="title has-text-centered is-size-3">
     {{ "weather-data.title.name" | translate }}
   </h1>
-
-  <div class="field">
-    <input
-      id="filterSwitch-historical"
-      type="checkbox"
-      name="filterSwitch-historical"
-      class="switch is-rounded"
-      (change)="filterHistorical(); showStationsNew()"
-    />
-    <label for="filterSwitch-historical">Filter Historical Stations </label>
-  </div>
-
-  <div class="columns is-multiline">
-    <div class="column" *ngFor="let filterOption of filterStates | keyvalue">
+  <!-- switches -->
+  <div class="columns">
+    <div class="column is-two-thirds">
+      <!-- historical switch -->
       <div class="field">
         <input
-          id="filterSwitch-{{ filterOption.key }}"
+          id="filterSwitch-historical"
           type="checkbox"
-          name="filterSwitch-{{ filterOption.key }}"
+          name="filterSwitch-historical"
           class="switch is-rounded"
-          [checked]="filterOption.value"
-          (change)="switchFilterOption(filterOption.key); showStationsNew()"
+          (change)="filterHistorical(); showStations()"
         />
-        <label for="filterSwitch-{{ filterOption.key }}"
-          >Filter {{ filterOption.key }}
-        </label>
+        <label for="filterSwitch-historical">Filter Historical Stations </label>
       </div>
-    </div>
-  </div>
 
-  <div class="card block">
-    <div class="card-content p-0 is-clipped">
-      <map
-        #map
-        height="{{ heightWeatherMap }}"
-        [markers]="stationMarkers"
-        [layerSelectable]="false"
-        center="51.165691, 10.451526"
-        zoom="6"
-      ></map>
-    </div>
-  </div>
-</div>
-
-<div class="box">
-  <h1 class="title has-text-centered is-size-3">StationShow</h1>
-  <section class="section">
-    <div class="container">
+      <!-- capability switches -->
       <div class="columns is-multiline">
-        <div class="column is-3" ng-repeat="object in objects">
-          <div class="box">
-            <!-- Customize the content based on your object properties -->
-            <h1 class="title">{{ object.name }}</h1>
-            <p>{{ object.description }}</p>
-            <p>Other information: {{ object.otherInfo }}</p>
-            <!-- Add more content as needed -->
+        <div
+          class="column"
+          *ngFor="let filterOption of filterStates | keyvalue"
+        >
+          <div class="field">
+            <input
+              id="filterSwitch-{{ filterOption.key }}"
+              type="checkbox"
+              name="filterSwitch-{{ filterOption.key }}"
+              class="switch is-rounded"
+              [checked]="filterOption.value"
+              (change)="switchFilterOption(filterOption.key); showStations()"
+            />
+            <label for="filterSwitch-{{ filterOption.key }}"
+              >Filter {{ filterOption.key }}
+            </label>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+
+  <div class="columns">
+    <div class="column is-two-thirds">
+      <!-- weather map -->
+      <div class="card block">
+        <div class="card-content p-0 is-clipped">
+          <map
+            #map
+            height="{{ heightWeatherMap }}"
+            [markers]="stationMarkers"
+            [layerSelectable]="false"
+            center="51.165691, 10.451526"
+            zoom="6"
+          ></map>
+        </div>
+      </div>
+    </div>
+    <div class="column is-one-third">
+      <!-- station object information -->
+      <div class="box" [style]="{ height: heightWeatherMap }">
+        <h2 class="title has-text-centered is-size-5">
+          Show Station Information
+        </h2>
+        <div *ngIf="station">
+          <p class="mb-2"><strong>Name:</strong> {{ station.name }}</p>
+          <p class="mb-2"><strong>State:</strong> {{ station.state }}</p>
+          <p class="mb-2"><strong>ID:</strong> {{ station.id }}</p>
+          <p class="mb-2">
+            <strong>Location:</strong> {{ station.location.coordinates | json }}
+          </p>
+          <p>
+            <strong>Historical:</strong> {{ station.historical ? "Yes" : "No" }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- download weather data -->
 <div class="box">
   <h1 class="title has-text-centered is-size-3">Testgelände</h1>
   <button class="button is-primary" (click)="testWeatherData()">
     Test WeatherDataByStation
   </button>
-</div>
-<button class="button is-primary">Click for Graph</button>
-<div class="box">
-  <h1 class="title has-text-centered is-size-3">Graph</h1>
-  <div>
-    <canvas id="weather"></canvas>
-  </div>
 </div>
