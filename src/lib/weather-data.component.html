@@ -1,11 +1,10 @@
-<!-- ForeCast Creation -->
 <div [style]="{ height: heightWeatherBox }" class="box">
   <h1 class="title has-text-centered is-size-3">
     {{ "weather-data.title.name" | translate }}
   </h1>
   <!-- switches -->
   <div class="columns">
-    <div class="column is-two-thirds">
+    <div class="column is-half">
       <!-- historical switch -->
       <div class="field">
         <input
@@ -42,9 +41,10 @@
     </div>
   </div>
 
+  <!--Weather Module -->
   <div class="columns">
-    <div class="column is-two-thirds">
-      <!-- weather map -->
+    <!-- weather map -->
+    <div class="column is-half">
       <div class="card block">
         <div class="card-content p-0 is-clipped">
           <map
@@ -58,22 +58,50 @@
         </div>
       </div>
     </div>
-    <div class="column is-one-third">
-      <!-- station object information -->
+    <!-- station information -->
+    <div class="column is-half">
       <div class="box" [style]="{ height: heightWeatherMap }">
-        <h2 class="title has-text-centered is-size-5">
-          Show Station Information
-        </h2>
-        <div *ngIf="station">
+        <div
+          class="box is-flex"
+          style="justify-content: space-between"
+          *ngIf="station"
+        >
           <p class="mb-2"><strong>Name:</strong> {{ station.name }}</p>
           <p class="mb-2"><strong>State:</strong> {{ station.state }}</p>
           <p class="mb-2"><strong>ID:</strong> {{ station.id }}</p>
-          <p class="mb-2">
-            <strong>Location:</strong> {{ station.location.coordinates | json }}
-          </p>
           <p>
             <strong>Historical:</strong> {{ station.historical ? "Yes" : "No" }}
           </p>
+        </div>
+        <div class="box" *ngIf="station">
+          <div class="columns">
+            <div class="column is-third" *ngFor="let type of activatedFilters">
+              <div class="dropdown is-active">
+                <div class="dropdown-trigger">
+                  <button
+                    class="button"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu3"
+                  >
+                    <span>{{ type }}</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                  <div
+                    class="dropdown-content"
+                    *ngFor="let res of possibleResolutions"
+                  >
+                    <a class="dropdown-item">
+                      {{ res }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

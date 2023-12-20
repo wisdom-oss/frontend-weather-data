@@ -59,6 +59,11 @@ export enum DataCapability {
     DewPoint = "dew_point",
     Visibility = "visibility",
     WindSynop = "wind_synop",
-    Soil = "soil",
-    StandardFormat = "standard_format"
+    Soil = "soil"
 }
+
+export const ActiveFilters: DataCapability[] = [
+    DataCapability.Temperature,
+    DataCapability.Precipitation,
+    DataCapability.Solar
+]

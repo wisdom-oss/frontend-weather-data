@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { Station, DataCapability } from "./dwd-interfaces";
+import { Station, DataCapability, ActiveFilters, TimeResolution } from "./dwd-interfaces";
 
 @Component({
   selector: 'lib-weather-data',
@@ -26,17 +26,27 @@ export class WeatherDataComponent implements OnInit {
 
   historicalFiltered: boolean = false;
 
+  // Key: DataType Attribute (Temperature) Value: True | False (Filter on/off)
   filterStates: Map<DataCapability, boolean> = new Map<DataCapability, boolean>();
 
-  activatedFilters: DataCapability[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar]
+  activatedFilters: DataCapability[] = ActiveFilters;
+
+  possibleResolutions = Object.values(TimeResolution);
 
   station: Station | undefined;
 
+  resolutionsPerDataType: String[] = [];
+
+  availableResolutions: Map<DataCapability, String[]> = new Map<DataCapability, String[]>();
+
   constructor(public weatherService: WeatherDataService) { }
+
+  //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
   ngOnInit(): void {
     this.setFilterMap();
     this.getAllStations();
+    this.getResolutionByDataType("air_temperature");
   }
 
   /**
@@ -56,9 +66,12 @@ export class WeatherDataComponent implements OnInit {
     this.weatherService.fetchStations("/").subscribe(stationData => {
       this.stations = stationData;
       this.createStationMarkers(this.stations);
-      console.log(this.stations);
+      //TODO Delete at end of session
+      this.station = this.stations[0];
     });
   }
+
+  //------------------------------------------------------------------------------ Markers and Tooltips ---------------------------------------------
 
   /**
    * create map markers based on stations
@@ -147,6 +160,41 @@ export class WeatherDataComponent implements OnInit {
   filterHistorical(): void {
     this.historicalFiltered = !this.historicalFiltered;
   }
+
+  //------------------------------------------------------------------------------ Show Station Information -----------------------------------------
+
+  safeAvailableResolutions(): void {
+    let arr: string[] = [];
+    let temp: string = "";
+
+
+    if (this.station) {
+      this.station.capabilities.forEach(element => {
+        if (element.dataType in this.activatedFilters) {
+          arr.push(element.resolution);
+          temp = element.dataType;
+        }
+      })
+
+    }
+  }
+
+  getResolutionByDataType(type: string): void {
+    let arr: TimeResolution[] = [];
+
+    if (this.station) {
+      if (type in this.activatedFilters) {
+        this.station.capabilities.forEach(element => {
+          if (element.dataType === type) {
+            arr.push(element.resolution);
+          }
+        })
+      }
+    }
+
+    this.resolutionsPerDataType = arr;
+  }
+
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 
