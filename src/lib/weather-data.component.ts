@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ComponentFactoryResolver, OnInit } from "@angular/core";
 import { Marker } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
@@ -13,31 +13,33 @@ import { Station, DataCapability, ActiveFilters, TimeResolution } from "./dwd-in
 
 export class WeatherDataComponent implements OnInit {
 
-  heightWeatherBox: string = "80vh";
+  //height of the component box
+  heightWeatherBox: string = "90vh";
   heightWeatherMap: string = (75 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   // save all stations from dwd
   stations: Station[] = [];
 
+  // single station object to show information
+  station: Station | undefined;
+
+  // Map of available Resolutions per DataCapability
+  availableResolutions: Map<string, string[]> = new Map<string, string[]>();
+
   // save all markers from stations
   stationMarkers: Marker[] = [];
 
+  // saved weather data regarding a station
   weatherData: any;
 
+  // flag if historical stations should be filtered
   historicalFiltered: boolean = false;
 
   // Key: DataType Attribute (Temperature) Value: True | False (Filter on/off)
   filterStates: Map<DataCapability, boolean> = new Map<DataCapability, boolean>();
 
-  activatedFilters: DataCapability[] = ActiveFilters;
-
-  possibleResolutions = Object.values(TimeResolution);
-
-  station: Station | undefined;
-
-  resolutionsPerDataType: String[] = [];
-
-  availableResolutions: Map<DataCapability, String[]> = new Map<DataCapability, String[]>();
+  // Array of DataCapabilities to show as Switches
+  activatedFilters: DataCapability[] = ActiveFilters;  
 
   constructor(public weatherService: WeatherDataService) { }
 
@@ -46,7 +48,6 @@ export class WeatherDataComponent implements OnInit {
   ngOnInit(): void {
     this.setFilterMap();
     this.getAllStations();
-    this.getResolutionByDataType("air_temperature");
   }
 
   /**
@@ -66,8 +67,6 @@ export class WeatherDataComponent implements OnInit {
     this.weatherService.fetchStations("/").subscribe(stationData => {
       this.stations = stationData;
       this.createStationMarkers(this.stations);
-      //TODO Delete at end of session
-      this.station = this.stations[0];
     });
   }
 
@@ -80,13 +79,14 @@ export class WeatherDataComponent implements OnInit {
     this.stationMarkers = stations.map(station => {
       return {
         coordinates: station.location.coordinates,
-        tooltip: this.createMarkerTooltip(station),
+        tooltip: station.name,
         icon: dwdStationIcon,
-        onClick: () => this.station = station
+        onClick: () => this.prepareStationInformation(station)
       }
     })
   }
 
+  //TODO DEPRECATED
   /**
    * create a new tooltip for every station on map
    * @param station to create new tooltip from
@@ -105,6 +105,7 @@ export class WeatherDataComponent implements OnInit {
     return tooltip_base;
   }
 
+   //TODO DEPRECATED
   filterTooltip(station: Station, dataType: string): string {
     let res = station.capabilities
       .filter(element => element.dataType === dataType)
@@ -131,8 +132,8 @@ export class WeatherDataComponent implements OnInit {
         filteredStations = this.filterStationsByDataType(filteredStations, filterKey);
       }
     });
-    this.createStationMarkers(filteredStations);
 
+    this.createStationMarkers(filteredStations);
   }
 
   /**
@@ -163,38 +164,17 @@ export class WeatherDataComponent implements OnInit {
 
   //------------------------------------------------------------------------------ Show Station Information -----------------------------------------
 
-  safeAvailableResolutions(): void {
-    let arr: string[] = [];
-    let temp: string = "";
+  prepareStationInformation(station: Station): void {
+    this.station = station;
 
+    this.activatedFilters.forEach(filter => {
+      let a = station.capabilities
+      .filter(element => element.dataType === filter)
+      .map(element => element.resolution).sort();
 
-    if (this.station) {
-      this.station.capabilities.forEach(element => {
-        if (element.dataType in this.activatedFilters) {
-          arr.push(element.resolution);
-          temp = element.dataType;
-        }
-      })
-
-    }
+      this.availableResolutions.set(filter, a);
+    })
   }
-
-  getResolutionByDataType(type: string): void {
-    let arr: TimeResolution[] = [];
-
-    if (this.station) {
-      if (type in this.activatedFilters) {
-        this.station.capabilities.forEach(element => {
-          if (element.dataType === type) {
-            arr.push(element.resolution);
-          }
-        })
-      }
-    }
-
-    this.resolutionsPerDataType = arr;
-  }
-
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 

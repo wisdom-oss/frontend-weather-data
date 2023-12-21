@@ -61,44 +61,40 @@
     <!-- station information -->
     <div class="column is-half">
       <div class="box" [style]="{ height: heightWeatherMap }">
+        <!-- non statistical information -->
         <div
           class="box is-flex"
           style="justify-content: space-between"
           *ngIf="station"
         >
-          <p class="mb-2"><strong>Name:</strong> {{ station.name }}</p>
-          <p class="mb-2"><strong>State:</strong> {{ station.state }}</p>
-          <p class="mb-2"><strong>ID:</strong> {{ station.id }}</p>
-          <p>
-            <strong>Historical:</strong> {{ station.historical ? "Yes" : "No" }}
-          </p>
+          <div class="columns">
+            <div class="column is-quarter">
+              <p><strong>Name:</strong> {{ station.name }}</p>
+            </div>
+            <div class="column is-quarter">
+              <p><strong>State:</strong> {{ station.state }}</p>
+            </div>
+            <div class="column is-quarter">
+              <p><strong>ID:</strong> {{ station.id }}</p>
+            </div>
+            <div class="column is-quarter">
+              <p><strong>Historical:</strong> {{ station.historical ? "Yes" : "No" }}
+            </div>
+          </div>
         </div>
+        <!-- statistical information -->
         <div class="box" *ngIf="station">
           <div class="columns">
-            <div class="column is-third" *ngFor="let type of activatedFilters">
-              <div class="dropdown is-active">
-                <div class="dropdown-trigger">
-                  <button
-                    class="button"
-                    aria-haspopup="true"
-                    aria-controls="dropdown-menu3"
-                  >
-                    <span>{{ type }}</span>
-                    <span class="icon is-small">
-                      <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                  </button>
+            <div class="column is-third" *ngFor="let type of availableResolutions | keyvalue">
+              <div class="box">
+                <div class="box">
+                  <p>
+                    <strong>{{ type.key }}</strong>
+                  </p>
                 </div>
-                <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-                  <div
-                    class="dropdown-content"
-                    *ngFor="let res of possibleResolutions"
-                  >
-                    <a class="dropdown-item">
-                      {{ res }}
-                    </a>
-                  </div>
-                </div>
+                  <a class="has-text-success" *ngFor="let resolution of type.value">
+                    {{ resolution }} <br>
+                  </a>
               </div>
             </div>
           </div>
