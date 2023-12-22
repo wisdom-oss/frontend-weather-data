@@ -61,53 +61,93 @@
     <!-- station information -->
     <div class="column is-half">
       <div class="box" [style]="{ height: heightWeatherMap }">
-        <!-- non statistical information -->
-        <div
-          class="box is-flex"
-          style="justify-content: space-between"
-          *ngIf="station"
-        >
-          <div class="columns">
-            <div class="column is-quarter">
-              <p><strong>Name:</strong> {{ station.name }}</p>
-            </div>
-            <div class="column is-quarter">
-              <p><strong>State:</strong> {{ station.state }}</p>
-            </div>
-            <div class="column is-quarter">
-              <p><strong>ID:</strong> {{ station.id }}</p>
-            </div>
-            <div class="column is-quarter">
-              <p><strong>Historical:</strong> {{ station.historical ? "Yes" : "No" }}
+        <div *ngIf="station">
+          <!-- non statistical information -->
+          <div class="box is-flex" style="justify-content: space-between">
+            <div class="columns">
+              <div class="column is-quarter">
+                <p><strong>Name:</strong> {{ station.name }}</p>
+              </div>
+              <div class="column is-quarter">
+                <p><strong>State:</strong> {{ station.state }}</p>
+              </div>
+              <div class="column is-quarter">
+                <p><strong>ID:</strong> {{ station.id }}</p>
+              </div>
+              <div class="column is-quarter">
+                <p>
+                  <strong>Historical:</strong>
+                  {{ station.historical ? "Yes" : "No" }}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- statistical information -->
-        <div class="box" *ngIf="station">
+          <!-- statistical information -->
           <div class="columns">
-            <div class="column is-third" *ngFor="let type of availableResolutions | keyvalue">
+            <div
+              class="column is-third"
+              *ngFor="let type of availableResolutions | keyvalue"
+            >
               <div class="box">
                 <div class="box">
                   <p>
                     <strong>{{ type.key }}</strong>
                   </p>
                 </div>
-                  <a class="has-text-success" *ngFor="let resolution of type.value">
-                    {{ resolution }} <br>
-                  </a>
+                <a
+                  class="has-text-success"
+                  *ngFor="let resolution of type.value"
+                  (click)="
+                    createRangeOfTime(type.key, resolution);
+                    chooseDataCapability(type.key);
+                    chooseTimeResolution(resolution)
+                  "
+                >
+                  {{ resolution }} <br />
+                </a>
               </div>
+            </div>
+          </div>
+          <!-- show Dates -->
+          <div class="box" *ngIf="usedDataType">
+            <h1 class="has-text-centered is-size-4">
+              <strong>{{ usedDataType }} {{ usedResolution }} data</strong>
+            </h1>
+            <br />
+            <div class="columns">
+              <div class="column is-half">
+                <p class="has-text-centered">
+                  <strong> Data available from:</strong>
+                </p>
+                <p class="has-text-centered">{{ availableTimeSlots[0] }}</p>
+              </div>
+              <div class="column is-half">
+                <p class="has-text-centered">
+                  <strong> Data available until:</strong>
+                </p>
+                <p class="has-text-centered">{{ availableTimeSlots[1] }}</p>
+              </div>
+            </div>
+            <!-- download data-->
+            <div class="has-text-centered">
+              <button
+                class="button is-primary"
+                (click)="
+                  requestDataforStation(
+                    station.id,
+                    usedDataType,
+                    usedResolution,
+                    usedFrom,
+                    usedUntil
+                  )
+                "
+              >
+                Download data
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- download weather data -->
-<div class="box">
-  <h1 class="title has-text-centered is-size-3">Testgelände</h1>
-  <button class="button is-primary" (click)="testWeatherData()">
-    Test WeatherDataByStation
-  </button>
 </div>
