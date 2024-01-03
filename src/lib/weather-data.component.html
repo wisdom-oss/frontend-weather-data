@@ -1,5 +1,5 @@
 <div [style]="{ height: heightWeatherBox }" class="box">
-  <h1 class="title has-text-centered is-size-3">
+  <h1 class="title has-text-centered is-size-2">
     {{ "weather-data.title.name" | translate }}
   </h1>
   <!-- switches -->
@@ -63,22 +63,30 @@
       <div class="box" [style]="{ height: heightWeatherMap }">
         <div *ngIf="station">
           <!-- non statistical information -->
-          <div class="box is-flex" style="justify-content: space-between">
+          <div class="box">
+            <h1 class="title has-text-centered is-size-3">
+              {{ station.name }}
+            </h1>
             <div class="columns">
-              <div class="column is-quarter">
-                <p><strong>Name:</strong> {{ station.name }}</p>
+              <div class="column is-third">
+                <div class="tags has-addons">
+                  <span class="tag is-dark">State: </span>
+                  <span class="tag is-info"> {{ station.state }} </span>
+                </div>
               </div>
-              <div class="column is-quarter">
-                <p><strong>State:</strong> {{ station.state }}</p>
+              <div class="column is-third">
+                <div class="tags has-addons">
+                  <span class="tag is-dark">ID: </span>
+                  <span class="tag is-info"> {{ station.id }} </span>
+                </div>
               </div>
-              <div class="column is-quarter">
-                <p><strong>ID:</strong> {{ station.id }}</p>
-              </div>
-              <div class="column is-quarter">
-                <p>
-                  <strong>Historical:</strong>
-                  {{ station.historical ? "Yes" : "No" }}
-                </p>
+              <div class="column is-third">
+                <div class="tags has-addons">
+                  <span class="tag is-dark">Historical: </span>
+                  <span class="tag is-info">
+                    {{ station.historical ? "Yes" : "No" }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -89,13 +97,11 @@
               *ngFor="let type of availableResolutions | keyvalue"
             >
               <div class="box">
-                <div class="box">
-                  <p>
-                    <strong>{{ type.key }}</strong>
-                  </p>
-                </div>
+                <h1 class="title has-text-centered is-size-5">
+                  {{ type.key }}
+                </h1>
                 <a
-                  class="has-text-success"
+                  class="has-text-info"
                   *ngFor="let resolution of type.value"
                   (click)="
                     createRangeOfTime(type.key, resolution);
@@ -109,45 +115,51 @@
             </div>
           </div>
           <!-- show Dates -->
-          <div class="box" *ngIf="usedDataType">
-            <h1 class="has-text-centered is-size-4">
-              <strong>{{ usedDataType }} {{ usedResolution }} data</strong>
-            </h1>
-            <br />
-            <div class="columns">
-              <div class="column is-half">
-                <p class="has-text-centered">
-                  <strong> Data available from:</strong>
-                </p>
-                <p class="has-text-centered">{{ availableTimeSlots[0] }}</p>
+          <div class="box">
+            <div *ngIf="usedDataType">
+              <h1 class="has-text-centered is-size-5">
+                <strong>{{ usedDataType }} {{ usedResolution }} data</strong>
+              </h1>
+              <br />
+              <div class="columns">
+                <div class="column is-half">
+                  <p class="has-text-centered">
+                    <strong> Data available from:</strong>
+                  </p>
+                  <p class="has-text-centered">{{ availableTimeSlots[0] }}</p>
+                </div>
+                <div class="column is-half">
+                  <p class="has-text-centered">
+                    <strong> Data available until:</strong>
+                  </p>
+                  <p class="has-text-centered">{{ availableTimeSlots[1] }}</p>
+                </div>
               </div>
-              <div class="column is-half">
-                <p class="has-text-centered">
-                  <strong> Data available until:</strong>
-                </p>
-                <p class="has-text-centered">{{ availableTimeSlots[1] }}</p>
+              <!-- download data-->
+              <div class="has-text-centered">
+                <button
+                  class="button is-primary"
+                  (click)="
+                    requestDataforStation(
+                      station.id,
+                      usedDataType,
+                      usedResolution,
+                      usedFrom,
+                      usedUntil
+                    )
+                  "
+                >
+                  Download data
+                </button>
               </div>
-            </div>
-            <!-- download data-->
-            <div class="has-text-centered">
-              <button
-                class="button is-primary"
-                (click)="
-                  requestDataforStation(
-                    station.id,
-                    usedDataType,
-                    usedResolution,
-                    usedFrom,
-                    usedUntil
-                  )
-                "
-              >
-                Download data
-              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<div class="container">
+  <h1 class="title has-text-centered">Your Heading</h1>
 </div>

@@ -14,8 +14,8 @@ import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
 export class WeatherDataComponent implements OnInit {
 
   //height of the component box
-  heightWeatherBox: string = "90vh";
-  heightWeatherMap: string = (75 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherBox: string = "75vh";
+  heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   // save all stations from dwd
   stations: Station[] = [];
