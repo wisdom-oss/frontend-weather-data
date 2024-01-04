@@ -45,7 +45,7 @@ export class WeatherDataComponent implements OnInit {
   // chosen end timestamp
   usedUntil: string = "2023-12-22T00:00:00Z"
 
-  selectedResColor: boolean = true;
+  selectedResolutionIndex: string = "";
 
   // flag if historical stations should be filtered
   historicalFiltered: boolean = false;
@@ -188,6 +188,17 @@ export class WeatherDataComponent implements OnInit {
       })
     }
   }
+
+  selectResolution(typeKey: string, resolution: string, isSelected: boolean): void {
+    if (!isSelected) {
+      this.createRangeOfTime(typeKey, resolution);
+      this.chooseDataCapability(typeKey);
+      this.chooseTimeResolution(resolution);
+      this.selectedResolutionIndex = typeKey; // or use any unique identifier
+    }
+  }
+
+
 
   //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 

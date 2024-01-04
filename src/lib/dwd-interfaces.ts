@@ -68,7 +68,7 @@ export const ActiveFilters: DataCapability[] = [
     DataCapability.Solar,
     DataCapability.Soil,
     DataCapability.Pressure,
-    DataCapability.Soil,
     DataCapability.Moisture,
-    DataCapability.Cloudiness
+    DataCapability.Cloudiness,
+    DataCapability.Wind
 ]
