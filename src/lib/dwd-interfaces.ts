@@ -46,10 +46,10 @@ export enum DataCapability {
     Moisture = "moisture",
     Cloudiness = "cloudiness",
     Pressure = "pressure",
-    ExtremeTemperature = "extreme_temperatures",
+    ExtremeTemperature = "extreme_temperatures", // not working
     ExtremeWind = "extreme_wind",
     TestWind = "wind_test",
-    ClimateIndices = "climate_indices",
+    ClimateIndices = "climate_indices", // not working
     KL = "kl",
     MorePrecipitation = "more_precip",
     WeatherPhenomena = "weather_phenomena",
@@ -65,5 +65,10 @@ export enum DataCapability {
 export const ActiveFilters: DataCapability[] = [
     DataCapability.Temperature,
     DataCapability.Precipitation,
-    DataCapability.Solar
+    DataCapability.Solar,
+    DataCapability.Soil,
+    DataCapability.Pressure,
+    DataCapability.Soil,
+    DataCapability.Moisture,
+    DataCapability.Cloudiness
 ]

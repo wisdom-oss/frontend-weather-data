@@ -14,8 +14,8 @@ import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
 export class WeatherDataComponent implements OnInit {
 
   //height of the component box
-  heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+  heightWeatherBox: string = "90vh";
+  heightWeatherMap: string = (80 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
   // save all stations from dwd
   stations: Station[] = [];
@@ -44,6 +44,8 @@ export class WeatherDataComponent implements OnInit {
   usedFrom: string = "2023-12-20T00:00:00Z"
   // chosen end timestamp
   usedUntil: string = "2023-12-22T00:00:00Z"
+
+  selectedResColor: boolean = true;
 
   // flag if historical stations should be filtered
   historicalFiltered: boolean = false;

@@ -4,39 +4,36 @@
   </h1>
   <!-- switches -->
   <div class="columns">
-    <div class="column is-half">
-      <!-- historical switch -->
+    <!-- historical switch -->
+    <div class="column">
+      <div class="field">
+      <input
+        id="filterSwitch-historical"
+        type="checkbox"
+        name="filterSwitch-historical"
+        class="switch is-rounded"
+        (change)="filterHistorical(); showStations()"
+      />
+      <label for="filterSwitch-historical">Filter Historical</label>
+    </div>
+    </div>
+    <!-- capability switches -->
+    <div
+      class="column"
+      *ngFor="let filterOption of filterStates | keyvalue"
+    >
       <div class="field">
         <input
-          id="filterSwitch-historical"
+          id="filterSwitch-{{ filterOption.key }}"
           type="checkbox"
-          name="filterSwitch-historical"
+          name="filterSwitch-{{ filterOption.key }}"
           class="switch is-rounded"
-          (change)="filterHistorical(); showStations()"
+          [checked]="filterOption.value"
+          (change)="switchFilterOption(filterOption.key); showStations()"
         />
-        <label for="filterSwitch-historical">Filter Historical Stations </label>
-      </div>
-
-      <!-- capability switches -->
-      <div class="columns is-multiline">
-        <div
-          class="column"
-          *ngFor="let filterOption of filterStates | keyvalue"
-        >
-          <div class="field">
-            <input
-              id="filterSwitch-{{ filterOption.key }}"
-              type="checkbox"
-              name="filterSwitch-{{ filterOption.key }}"
-              class="switch is-rounded"
-              [checked]="filterOption.value"
-              (change)="switchFilterOption(filterOption.key); showStations()"
-            />
-            <label for="filterSwitch-{{ filterOption.key }}"
-              >Filter {{ filterOption.key }}
-            </label>
-          </div>
-        </div>
+        <label for="filterSwitch-{{ filterOption.key }}"
+          >Filter {{ filterOption.key }}
+        </label>
       </div>
     </div>
   </div>
@@ -68,19 +65,19 @@
               {{ station.name }}
             </h1>
             <div class="columns">
-              <div class="column is-third">
+              <div class="column is-half">
                 <div class="tags has-addons">
                   <span class="tag is-dark">State: </span>
                   <span class="tag is-info"> {{ station.state }} </span>
                 </div>
               </div>
-              <div class="column is-third">
+              <div class="column is-quarter">
                 <div class="tags has-addons">
                   <span class="tag is-dark">ID: </span>
                   <span class="tag is-info"> {{ station.id }} </span>
                 </div>
               </div>
-              <div class="column is-third">
+              <div class="column is-quarter">
                 <div class="tags has-addons">
                   <span class="tag is-dark">Historical: </span>
                   <span class="tag is-info">
@@ -91,13 +88,13 @@
             </div>
           </div>
           <!-- statistical information -->
-          <div class="columns">
+          <div class="columns is-multiline">
             <div
-              class="column is-third"
+              class="column"
               *ngFor="let type of availableResolutions | keyvalue"
             >
-              <div class="box">
-                <h1 class="title has-text-centered is-size-5">
+              <div class="box" >
+                <h1 class="title has-text-centered is-size-5" style="white-space: nowrap;">
                   {{ type.key }}
                 </h1>
                 <a
@@ -108,6 +105,7 @@
                     chooseDataCapability(type.key);
                     chooseTimeResolution(resolution)
                   "
+                  [ngClass]="{ 'has-text-success': selectedResColor, 'has-text-info': !selectedResColor}"
                 >
                   {{ resolution }} <br />
                 </a>
@@ -117,10 +115,6 @@
           <!-- show Dates -->
           <div class="box">
             <div *ngIf="usedDataType">
-              <h1 class="has-text-centered is-size-5">
-                <strong>{{ usedDataType }} {{ usedResolution }} data</strong>
-              </h1>
-              <br />
               <div class="columns">
                 <div class="column is-half">
                   <p class="has-text-centered">
@@ -135,23 +129,6 @@
                   <p class="has-text-centered">{{ availableTimeSlots[1] }}</p>
                 </div>
               </div>
-              <!-- download data-->
-              <div class="has-text-centered">
-                <button
-                  class="button is-primary"
-                  (click)="
-                    requestDataforStation(
-                      station.id,
-                      usedDataType,
-                      usedResolution,
-                      usedFrom,
-                      usedUntil
-                    )
-                  "
-                >
-                  Download data
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -160,6 +137,43 @@
   </div>
 </div>
 
-<div class="container">
-  <h1 class="title has-text-centered">Your Heading</h1>
+<!-- show Dates -->
+<div class="box">
+  <div *ngIf="usedDataType">
+    <h1 class="has-text-centered is-size-5">
+      <strong>{{ usedDataType }} {{ usedResolution }} data</strong>
+    </h1>
+    <br />
+    <div class="columns">
+      <div class="column is-half">
+        <p class="has-text-centered">
+          <strong> Data available from:</strong>
+        </p>
+        <p class="has-text-centered">{{ availableTimeSlots[0] }}</p>
+      </div>
+      <div class="column is-half">
+        <p class="has-text-centered">
+          <strong> Data available until:</strong>
+        </p>
+        <p class="has-text-centered">{{ availableTimeSlots[1] }}</p>
+      </div>
+    </div>
+    <!-- download data-->
+    <div class="has-text-centered">
+      <button
+        class="button is-primary"
+        (click)="
+          requestDataforStation(
+            station.id,
+            usedDataType,
+            usedResolution,
+            usedFrom,
+            usedUntil
+          )
+        "
+      >
+        Download data
+      </button>
+    </div>
+  </div>
 </div>
