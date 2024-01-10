@@ -157,10 +157,38 @@
     <!-- DatePicker From -->
     <div class="column is-third">
       <span> Datepicker</span>
+
+      <!-- Date Picker Start Time -->
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label">Choose Start Date</label>
+        </div>
+        <div class="field-body">
+          <input
+            type="date"
+            [mode]="BulmaCalendarMode.DEFAULT"
+            [options]="{ isRange: false }"
+          />
+        </div>
+      </div>
     </div>
     <!-- DatePicker Until -->
     <div class="column is-third">
       <span> Datepicker</span>
+    </div>
+
+    <!-- Date Picker EndTime Time -->
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Choose End Date</label>
+      </div>
+      <div class="field-body">
+        <input
+          type="date"
+          [mode]="BulmaCalendarMode.DEFAULT"
+          [options]="{ isRange: false }"
+        />
+      </div>
     </div>
   </div>
   <!-- download data-->

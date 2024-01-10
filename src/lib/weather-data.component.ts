@@ -1,5 +1,5 @@
 import { Component, ComponentFactoryResolver, OnInit } from "@angular/core";
-import { Marker } from "common";
+import { Marker, BulmaCalendarMode } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
 import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
@@ -10,6 +10,9 @@ import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
     styles: [],
 })
 export class WeatherDataComponent implements OnInit {
+
+    BulmaCalendarMode = BulmaCalendarMode;
+
     //height of the component box
     heightWeatherBox: string = "90vh";
     heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
@@ -55,9 +58,9 @@ export class WeatherDataComponent implements OnInit {
     weatherData: any;
 
     // flag to (de)activate the download function
-    downloadAvailable: boolean = false;
+    downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) {}
+    constructor(public weatherService: WeatherDataService) { }
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
