@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Marker, BulmaCalendarMode } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
@@ -10,12 +10,14 @@ import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
     styles: [],
 })
 export class WeatherDataComponent implements OnInit {
-
     BulmaCalendarMode = BulmaCalendarMode;
 
-    //height of the component box
-    heightWeatherBox: string = "90vh";
+    //height of the map box
+    heightWeatherBox: string = "85vh";
     heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
+
+    heightDataTypeBox: string = "25vh";
+    heightDownloadBox: string = "30vh";
 
     // save all stations from dwd
     stations: Station[] = [];
@@ -60,7 +62,7 @@ export class WeatherDataComponent implements OnInit {
     // flag to (de)activate the download function
     downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) { }
+    constructor(public weatherService: WeatherDataService) {}
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
@@ -230,11 +232,13 @@ export class WeatherDataComponent implements OnInit {
 
         if (!this.usedFrom) {
             this.usedFrom = "00:00:00 25.07.2023";
+            alert(`No start time selected. Using ${this.usedFrom}`);
             console.error(`Initialize query with ${this.usedFrom}!`);
         }
 
         if (!this.usedUntil) {
             this.usedUntil = "00:00:00 26.07.2023";
+            alert(`No end time selected. Using ${this.usedUntil}`);
             console.error(`Initialize query with ${this.usedUntil}!`);
         }
 
@@ -323,6 +327,17 @@ export class WeatherDataComponent implements OnInit {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }
+    }
+
+    //------------------------------------------------------------------------------ DatePicker Functions ------------------------------------------
+
+    /**
+     *handle event emitted by datepicker and extract the start and end date
+     * @param event emitted when both dates are selected in GUI
+     */
+    handleDatePickEvent(event: any) {
+        this.usedFrom = this.formatTimestamp(event.data.startDate);
+        this.usedUntil = this.formatTimestamp(event.data.endDate);
     }
 
     //------------------------------------------------------------------------------ Formatting Functions ------------------------------------------

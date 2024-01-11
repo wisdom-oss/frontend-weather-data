@@ -6,8 +6,8 @@ export interface Station {
     name: string;
     state: string;
     location: {
-        type: "Point",
-        coordinates: [number, number]
+        type: "Point";
+        coordinates: [number, number];
     };
     historical: boolean;
     capabilities: {
@@ -59,7 +59,7 @@ export enum DataCapability {
     DewPoint = "dew_point",
     Visibility = "visibility",
     WindSynop = "wind_synop",
-    Soil = "soil"
+    Soil = "soil",
 }
 
 export const ActiveFilters: DataCapability[] = [
@@ -67,7 +67,4 @@ export const ActiveFilters: DataCapability[] = [
     DataCapability.Precipitation,
     DataCapability.Solar,
     DataCapability.Soil,
-    DataCapability.Pressure,
-    DataCapability.Moisture,
-    DataCapability.Cloudiness
-]
+];

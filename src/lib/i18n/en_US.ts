@@ -1,10 +1,14 @@
 export default {
-  "weather-data": {
-    label: {
-      name: "Weather"
+    "weather-data": {
+        label: {
+            name: "Weather",
+        },
+        title: {
+            name: "German Weather Service",
+        },
+        tags: {
+            state: "State",
+            historical: "Historical",
+        },
     },
-    title: {
-      name: "German Weather Service"
-    }
-  }
-}
+};
