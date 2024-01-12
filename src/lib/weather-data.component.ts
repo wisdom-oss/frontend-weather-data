@@ -16,8 +16,11 @@ export class WeatherDataComponent implements OnInit {
     heightWeatherBox: string = "85vh";
     heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
-    heightDataTypeBox: string = "25vh";
-    heightDownloadBox: string = "30vh";
+    heightDataTypeBox: string = "23vh";
+    heightDownloadBox: string = "28vh";
+
+    // width of every box element rendered for the data types
+    widthDatatypeBox: string = "9vw";
 
     // save all stations from dwd
     stations: Station[] = [];
@@ -26,7 +29,7 @@ export class WeatherDataComponent implements OnInit {
     stationMarkers: Marker[] = [];
 
     // flag if historical stations should be filtered
-    historicalFiltered: boolean = false;
+    historicalFiltered: boolean = true;
 
     // Array of DataCapabilities to show as Switches
     activatedFilters: DataCapability[] = ActiveFilters;
@@ -62,7 +65,7 @@ export class WeatherDataComponent implements OnInit {
     // flag to (de)activate the download function
     downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) {}
+    constructor(public weatherService: WeatherDataService) { }
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
@@ -93,22 +96,6 @@ export class WeatherDataComponent implements OnInit {
         });
     }
 
-    //------------------------------------------------------------------------------ Markers and Tooltips ---------------------------------------------
-
-    /**
-     * create map markers based on stations
-     */
-    createStationMarkers(stations: Station[]): void {
-        this.stationMarkers = stations.map((station) => {
-            return {
-                coordinates: station.location.coordinates,
-                tooltip: station.name,
-                icon: dwdStationIcon,
-                onClick: () => this.prepareStationInformation(station),
-            };
-        });
-    }
-
     //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
     /**
@@ -116,10 +103,18 @@ export class WeatherDataComponent implements OnInit {
      */
     showStations(): void {
         let filteredStations: Station[] = this.stations;
+
+        // show only stations which have recent data (until today)
         if (this.historicalFiltered) {
             filteredStations = filteredStations.filter((station) => {
                 return !station.historical;
             });
+        }
+        // show only stations which don't have recent data
+        else {
+            filteredStations = filteredStations.filter((station) => {
+                return station.historical;
+            })
         }
 
         this.filterStates.forEach((filterValue, filterKey) => {
@@ -141,7 +136,7 @@ export class WeatherDataComponent implements OnInit {
     }
 
     /**
-     * searches an array of stations for every station, which holds a certain datatype in their
+     * searches an array of stations for every station which holds a certain datatype in their
      * capabilities attribute
      * @param stations array to search in
      * @param dataTypeToFilter to search for
@@ -158,6 +153,22 @@ export class WeatherDataComponent implements OnInit {
      */
     filterHistorical(): void {
         this.historicalFiltered = !this.historicalFiltered;
+    }
+
+    //------------------------------------------------------------------------------ Markers and Tooltips ---------------------------------------------
+
+    /**
+     * create map markers based on stations
+     */
+    createStationMarkers(stations: Station[]): void {
+        this.stationMarkers = stations.map((station) => {
+            return {
+                coordinates: station.location.coordinates,
+                tooltip: station.name,
+                icon: dwdStationIcon,
+                onClick: () => this.prepareStationInformation(station),
+            };
+        });
     }
 
     //------------------------------------------------------------------------------ Show Station Information -----------------------------------------
@@ -177,10 +188,19 @@ export class WeatherDataComponent implements OnInit {
                 .sort();
 
             this.availableResolutions.set(filter, a);
-            //BUG: maybe decomment
-            //this.usedDataType = undefined;
-            //this.usedResolution = undefined;
+            this.clearStationData()
         });
+    }
+
+    /**
+     * clear all station information to not 
+     * confuse them with new information
+     */
+    clearStationData(): void {
+        this.usedDataType = undefined;
+        this.usedResolution = undefined;
+        this.usedFrom = undefined;
+        this.usedUntil = undefined;
     }
 
     /**
@@ -205,8 +225,6 @@ export class WeatherDataComponent implements OnInit {
     setTypeAndResolution(dataType: string, resolution: string): void {
         this.usedDataType = dataType;
         this.usedResolution = resolution;
-
-        console.info(`chosen data: ${this.usedDataType}, chosen resolution: ${this.usedResolution}`);
     }
 
     /**
@@ -329,7 +347,7 @@ export class WeatherDataComponent implements OnInit {
         }
     }
 
-    //------------------------------------------------------------------------------ DatePicker Functions ------------------------------------------
+    //------------------------------------------------------------------------------ DatePicker Functions --------------------------------------------
 
     /**
      *handle event emitted by datepicker and extract the start and end date
@@ -340,7 +358,7 @@ export class WeatherDataComponent implements OnInit {
         this.usedUntil = this.formatTimestamp(event.data.endDate);
     }
 
-    //------------------------------------------------------------------------------ Formatting Functions ------------------------------------------
+    //------------------------------------------------------------------------------ Formatting Functions --------------------------------------------
 
     /**
      * transform the used time format to readable one
@@ -394,12 +412,12 @@ export class WeatherDataComponent implements OnInit {
             const upper_bound = this.convertTimestampToUnix(this.availableTimeSlots[1]);
 
             if (lower_bound > start_ts || start_ts > upper_bound) {
-                console.error("start timestamp out of range");
+                alert(`starting timestamp: ${this.usedFrom} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
                 return false;
             }
 
             if (lower_bound > end_ts || end_ts > upper_bound) {
-                console.error("end timestamp out of range");
+                alert(`ending timestamp: ${this.usedUntil} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
                 return false;
             }
             return true;

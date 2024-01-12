@@ -28,7 +28,9 @@
                     [checked]="filterOption.value"
                     (change)="switchFilterOption(filterOption.key); showStations()"
                 />
-                <label for="filterSwitch-{{ filterOption.key }}"> {{ filterOption.key }} </label>
+                <label for="filterSwitch-{{ filterOption.key }}">
+                    {{ filterOption.key }}
+                </label>
             </div>
         </div>
     </div>
@@ -75,50 +77,52 @@
                             <div class="column is-third">
                                 <div class="tags has-addons is-centered">
                                     <span class="tag is-dark"> Historical </span>
-                                    <span class="tag is-primary"> {{ station.historical ? "Yes" : "No" }} </span>
+                                    <span class="tag is-primary">
+                                        {{ station.historical ? "Yes" : "No" }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- statistical information -->
-                    <div
-                        class="columns is-multiline"
-                        [style.overflow-y]="'auto'"
-                        [style.max-height]="heightDataTypeBox"
-                    >
-                        <div class="column" *ngFor="let type of availableResolutions | keyvalue">
-                            <div class="box">
-                                <h1 class="title has-text-centered is-size-5" style="white-space: nowrap">
-                                    {{ type.key }}
-                                </h1>
-                                <div>
-                                    <a
-                                        class="has-text-primary"
-                                        *ngFor="let resolution of type.value"
-                                        (click)="
-                                            createRangeOfTime(type.key, resolution);
-                                            setTypeAndResolution(type.key, resolution)
-                                        "
-                                    >
-                                        {{ resolution }} <br />
-                                    </a>
+                    <div class="box mt-4" [style]="{ height: heightDataTypeBox, 'overflow-y': 'auto' }">
+                        <div class="columns is-multiline">
+                            <div class="column is-narrow" *ngFor="let type of availableResolutions | keyvalue">
+                                <div class="box" [style]="{ width: widthDatatypeBox }">
+                                    <h1 class="title has-text-centered is-size-5" style="white-space: nowrap">
+                                        {{ type.key }}
+                                    </h1>
+                                    <div>
+                                        <a
+                                            class="has-text-primary"
+                                            *ngFor="let resolution of type.value"
+                                            (click)="
+                                                createRangeOfTime(type.key, resolution);
+                                                setTypeAndResolution(type.key, resolution)
+                                            "
+                                        >
+                                            {{ resolution }} <br />
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!--Download Box -->
                     <div class="box" [style]="{ height: heightDownloadBox }">
                         <div *ngIf="usedDataType">
+                            <h1 class="title is-size-4 has-text-centered">Download Information</h1>
                             <!-- download information tags-->
                             <div class="columns" *ngIf="station">
                                 <div class="column is-half">
-                                    <div class="tags has-addons is-centered">
+                                    <div class="tags has-addons">
                                         <span class="tag is-dark">Datenart </span>
                                         <span class="tag is-primary"> {{ usedDataType }} </span>
                                     </div>
                                 </div>
                                 <div class="column is-half">
-                                    <div class="tags has-addons is-centered">
+                                    <div class="tags has-addons">
                                         <span class="tag is-dark">Auflösung </span>
                                         <span class="tag is-primary"> {{ usedResolution }} </span>
                                     </div>
@@ -127,33 +131,40 @@
                             <!-- show available dates -->
                             <div class="columns">
                                 <div class="column is-half">
-                                    <div class="tags has-addons is-centered">
+                                    <div class="tags has-addons">
                                         <span class="tag is-dark">Available from </span>
-                                        <span class="tag is-primary"> {{ availableTimeSlots[0] }} </span>
+                                        <span class="tag is-primary">
+                                            {{ availableTimeSlots[0] }}
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="column is-half">
-                                    <div class="tags has-addons is-centered">
+                                    <div class="tags has-addons">
                                         <span class="tag is-dark">Available until </span>
-                                        <span class="tag is-primary"> {{ availableTimeSlots[1] }} </span>
+                                        <span class="tag is-primary">
+                                            {{ availableTimeSlots[1] }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                             <!-- Date Picker Time -->
-                            <input
-                                type="date"
-                                [mode]="BulmaCalendarMode.DEFAULT"
-                                [options]="{ isRange: true }"
-                                (select)="handleDatePickEvent($event)"
-                            />
+                            <div class="has-text-centered">
+                                <input
+                                    type="date"
+                                    [mode]="BulmaCalendarMode.DEFAULT"
+                                    [options]="{ isRange: true }"
+                                    (select)="handleDatePickEvent($event)"
+                                />
+                            </div>
+
                             <!-- download data-->
-                            <div class="has-text-centered mt-4">
+                            <div class="has-text-centered mt-2">
                                 <button
                                     class="button is-primary"
                                     [disabled]="!usedDataType"
                                     (click)="processWeatherInformation()"
                                 >
-                                    Download data
+                                    Download
                                 </button>
                             </div>
                         </div>
