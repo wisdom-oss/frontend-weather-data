@@ -6,8 +6,8 @@ export interface Station {
     name: string;
     state: string;
     location: {
-        type: "Point",
-        coordinates: [number, number]
+        type: "Point";
+        coordinates: [number, number];
     };
     historical: boolean;
     capabilities: {
@@ -34,10 +34,46 @@ export enum TimeResolution {
 }
 
 /**
- * possible time resolutions
+ * possible data types
  */
 export enum DataCapability {
     Temperature = "air_temperature",
     Precipitation = "precipitation",
-    Solar = "solar"
+    Moisture = "moisture",
+    Pressure = "pressure",
+    DewPoint = "dew_point",
+    Soil = "soil",
+    SoilTemperature = "soil_temperature",
+    Solar = "solar",
+    Sun = "sun",
+    Visibility = "visibility",
+    Wind = "wind",
+    ExtremeWind = "extreme_wind",
+    TestWind = "wind_test",
+    CloudType = "cloud_type",
+    Cloudiness = "cloudiness",
+    MorePrecipitation = "more_precip",
+    KL = "kl",
+    WeatherPhenomena = "weather_phenomena",
+    MoreWeatherPhenomena = "more_weather_phenomena",
+    WaterEquivalent = "water_equiv",
+    WindSynop = "wind_synop",
+    ClimateIndices = "climate_indices", // not working
+    ExtremeTemperature = "extreme_temperatures", // not working
 }
+
+/**
+ * array of active filters
+ * for every element a switch will be created filtering 
+ * weather map based on the element
+ */
+export const ActiveFilters: DataCapability[] = [
+    DataCapability.Temperature,
+    DataCapability.Precipitation,
+    DataCapability.Solar,
+    DataCapability.Moisture,
+    DataCapability.Pressure,
+    DataCapability.DewPoint,
+    DataCapability.Visibility,
+    DataCapability.Soil
+];

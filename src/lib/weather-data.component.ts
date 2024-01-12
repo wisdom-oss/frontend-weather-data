@@ -1,315 +1,427 @@
 import { Component, OnInit } from "@angular/core";
-import { Marker } from "common";
+import { Marker, BulmaCalendarMode } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
-import { Station, DataCapability } from "./dwd-interfaces";
-import { filter } from "rxjs";
-import { Data } from "web-ifc-three/IFC/components/sequence/Data";
+import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
 
 @Component({
-  selector: 'lib-weather-data',
-  templateUrl: "weather-data.component.html",
-  styles: [
-  ]
+    selector: "lib-weather-data",
+    templateUrl: "weather-data.component.html",
+    styles: [],
 })
-
 export class WeatherDataComponent implements OnInit {
+    BulmaCalendarMode = BulmaCalendarMode;
 
-  heightWeatherBox: string = "75vh";
-  heightWeatherMap: string = (70 / 100 * parseFloat(this.heightWeatherBox)).toString() + "vh";
+    //height of the map box
+    heightWeatherBox: string = "85vh";
+    heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
-  // save all stations from dwd
-  stations: Station[] = [];
+    heightDataTypeBox: string = "23vh";
+    heightDownloadBox: string = "28vh";
 
-  // save all markers from stations
-  stationMarkers: Marker[] = [];
+    // width of every box element rendered for the data types
+    widthDatatypeBox: string = "9vw";
 
-  // Kind of capabilities to use in the dwd
-  capability: string[] = [DataCapability.Temperature, DataCapability.Precipitation, DataCapability.Solar];
+    // save all stations from dwd
+    stations: Station[] = [];
 
-  weatherData: any;
+    // save all markers from stations
+    stationMarkers: Marker[] = [];
 
-  historicalFiltered: boolean = false;
-  temperatureFiltered: boolean = false;
-  precipitationFiltered: boolean = false;
-  solarHoursFiltered: boolean = false;
+    // flag if historical stations should be filtered
+    historicalFiltered: boolean = true;
 
-  object = {
-    name: "Test3",
-    description: "here are some information",
-    otherInfo: "useless other stuff"
-  }
+    // Array of DataCapabilities to show as Switches
+    activatedFilters: DataCapability[] = ActiveFilters;
 
-  constructor(public weatherService: WeatherDataService) { }
+    // Key: DataType Attribute (Temperature) Value: True | False (Filter on/off)
+    filterStates: Map<DataCapability, boolean> = new Map<DataCapability, boolean>();
 
-  ngOnInit(): void {
-    this.getAllStations();
-  }
+    //------------------------------------------------------------------------------ Single Station Object ----------------------------------------
 
-  /**
-   * get all station data from dwd. 
-   * safe them in stations
-   */
-  getAllStations(): void {
-    this.weatherService.fetchStations("/").subscribe(stationData => {
-      this.stations = stationData;
-      this.createStationMarkers(this.stations);
-      console.log(this.stations);
-    });
-  }
+    // single station object to show information
+    station: Station | undefined;
 
-  /**
-   * create map markers based on stations
-   */
-  createStationMarkers(stations: Station[]): void {
-    this.stationMarkers = stations.map(station => {
-      return {
-        coordinates: station.location.coordinates,
-        tooltip: this.createMarkerTooltip(station),
-        icon: dwdStationIcon,
-        onClick: () => this.showSingleStation(station)
-      }
-    })
-  }
+    // chosen DataCapability
+    usedDataType: string | undefined;
+    // chosen Resolution
+    usedResolution: string | undefined;
+    // chosen starting timestamp
+    usedFrom: string | undefined;
+    // chosen end timestamp
+    usedUntil: string | undefined;
 
-  /**
-   * create a new tooltip for every station on map
-   * @param station to create new tooltip from
-   * @returns the tooltip as string
-   */
-  createMarkerTooltip(station: Station): string {
+    // Map of available Resolutions per DataCapability
+    availableResolutions: Map<string, string[]> = new Map<string, string[]>();
 
-    let tooltip_base: string = `<div class="has-text-centered has-text-weight-bold">${station.name}</div>`;
+    // save range of which data is available
+    availableTimeSlots: string[] = [];
 
-    if (this.temperatureFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Temperature);
+    //------------------------------------------------------------------------------ Weather Object ------------------------------------------------
+
+    // saved weather data regarding a station
+    weatherData: any;
+
+    // flag to (de)activate the download function
+    downloadAvailable: boolean = true;
+
+    constructor(public weatherService: WeatherDataService) { }
+
+    //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
+
+    ngOnInit(): void {
+        this.setFilterMap();
+        this.getAllStations();
     }
 
-    if (this.precipitationFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Precipitation);
-    }
-
-    if (this.solarHoursFiltered) {
-      tooltip_base += this.filterTooltip(station, DataCapability.Solar);
-    }
-
-    return tooltip_base;
-  }
-
-  filterTooltip(station: Station, dataType: string): string {
-    let res = station.capabilities
-      .filter(element => element.dataType === dataType)
-      .map(element => element.resolution).join("<br>");
-
-    return `<div class="has-text-centered">
-            <span class="has-text-weight-bold">${dataType}:</span> <br>
-            <span class="has-text-weight-normal">${res}</span> <br>
-            </div>`;
-  }
-
-  //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
-
-  /**
-   * filter the array of stations to accomodate the filters used
-   * in last step create new station markers to make them visible.
-   * filters can be activated interchangeably
-   */
-  showStations(): void {
-    let filteredStations: Station[] = this.stations;
-
-    if (this.historicalFiltered) {
-      filteredStations = filteredStations.filter(station => {
-        return !station.historical
-      })
-    }
-
-    if (this.temperatureFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Temperature);
-    }
-
-    if (this.precipitationFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Precipitation);
-    }
-
-    if (this.solarHoursFiltered) {
-      filteredStations = this.filterStationsByDataType(filteredStations, DataCapability.Solar);
-    }
-
-    this.createStationMarkers(filteredStations);
-  }
-
-  /**
-   * searches an array of stations for every station, which holds a certain datatype in their
-   * capabilities attribute
-   * @param stations array to search in
-   * @param dataTypeToFilter to search for
-   * @returns array of stations with the searched datatype
-   */
-  filterStationsByDataType(stations: Station[], dataTypeToFilter: string): Station[] {
-    return stations.filter((station) =>
-      station.capabilities.some((capability) => capability.dataType === dataTypeToFilter)
-    );
-  }
-
-  switchFilter(filterType: "historical" | DataCapability): void {
-
-    switch (filterType) {
-      case DataCapability.Temperature: {
-        this.temperatureFiltered = !this.temperatureFiltered;
-        break;
-      }
-      case DataCapability.Precipitation: {
-        this.precipitationFiltered = !this.precipitationFiltered;
-        console.log(this.precipitationFiltered);
-        break;
-      }
-      case DataCapability.Solar: {
-        this.solarHoursFiltered = !this.solarHoursFiltered;
-        console.log(this.solarHoursFiltered);
-
-        break;
-      }
-      default: {
-        if (filterType === "historical") {
-          this.historicalFiltered = !this.historicalFiltered;
-          return;
-        }
-      }
-    }
-  }
-
-  filterHistorical(): void {
-    this.historicalFiltered = !this.historicalFiltered;
-  }
-
-  filterTemperature(): void {
-    this.temperatureFiltered = !this.temperatureFiltered;
-  }
-
-  filterPrecipitation(): void {
-    this.precipitationFiltered = !this.precipitationFiltered;
-  }
-
-  filterSolarHours(): void {
-    this.solarHoursFiltered = !this.solarHoursFiltered;
-  }
-
-  //------------------------------------------------------------------------------ Station Tooltip and Download    ----------------------------------
-
-  showSingleStation(station: Station): void {
-    this.object.name = station.name;
-    this.object.description = station.id;
-    this.object.otherInfo = station.historical.toString();
-  }
-
-
-  //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
-
-
-  /**
-     * test function with valid values to check api
+    /**
+     * populates the filterMap
+     * (which determines the switches to appear for map)
+     * using the activatedFilters array
      */
-  testWeatherData(): void {
-    console.log(this.stations);
-    this.requestDataforStation("Oldenburg (A)", "Niedersachsen", "air_temperature", "subdaily")
-    // ,"1601065435", "1701967435"
-  }
-
-  /**
-   * function to request weather data from station
-   * @param stationId id of station
-   * @param dataPoint kind of data
-   * @param timeResolution timely resolution
-   * @param from first timestamp
-   * @param until last timestamp
-   */
-  requestDataforStation(stationName: string, stationState: string, dataPoint: string, timeResolution: string, from?: string, until?: string): void {
-
-    let id = this.searchIdFromNameAndState(stationName, stationState);
-
-    if (id) {
-      let url = this.buildUrl(id, dataPoint, timeResolution, from, until);
-      console.log(url);
-
-      if (url) {
-        this.getWeatherDataByStation(url);
-      } else {
-        console.log("Given URL is not valid");
-      }
-    } else {
-      console.log(`The combination of ${stationName} and ${stationState} has no ID`);
-    }
-  }
-
-  /**
-   * help function, not to be called directly
-   * standardized processing function to build the url to retrieve stationary data
-   * @param stationId to find a unique station
-   * @param dataPoint kind of data to retrieve (precipitation etc.)
-   * @param timeResolution timely resolution (1 min, 5 min) to find the correct data
-   * @param from timestamp from when data shall be requested
-   * @param until timestamp until data is requested
-   * @returns if no stationID is used to safe resources
-   */
-  buildUrl(stationId: string, dataPoint: string, timeResolution: string, from?: string, until?: string): string | undefined {
-    if (!stationId) {
-      //TODO raise Error here
-      console.log("No valid ID");
-      return undefined;
+    setFilterMap(): void {
+        this.activatedFilters.forEach((item) => {
+            this.filterStates.set(item, true);
+        });
     }
 
-    let endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`
-
-    if (from && until) {
-      endpoint += `?from=${from}&until=${until}`;
-      //TODO activate from and until
-    } else {
-      console.log("No period specified, request can take longer!");
+    /**
+     * get all station data from dwd.
+     * safe them in stations
+     */
+    getAllStations(): void {
+        this.weatherService.fetchStations("/").subscribe((stationData) => {
+            this.stations = stationData;
+            this.showStations();
+        });
     }
 
-    return endpoint;
-  }
+    //------------------------------------------------------------------------------ Filter Stations on Map -------------------------------------------
 
-  /**
-   * help function not to be called directly
-   * request the weather service for a station, time resolution and data point
-   * @param url the finished url to request from
-   */
-  getWeatherDataByStation(url: string) {
-    this.weatherService.fetchWeatherDataByStation(url.toString()).subscribe({
-      //TODO Discuss with Tim
-      next: (data) => {
-        this.weatherData = data;
-        console.log(this.weatherData);
-      },
-      error: (error) => {
-        console.log(error);
-      },
-      complete: () => {
-        console.log("Data retrieval complete");
-      }
-    })
-  }
+    /**
+     * filter list of stations to fit criteria and initiate marker creation
+     */
+    showStations(): void {
+        let filteredStations: Station[] = this.stations;
 
-  /**
-   * help function to find the id from a name and state
-   * @param name name of the location
-   * @param state of the location
-   * @returns dwd id from station
-   */
-  searchIdFromNameAndState(name: string, state: string): string | undefined {
-    let station: any;
-    if (this.stations) {
-      station = this.stations.find((element) => element.name === name && element.state === state);
+        // show only stations which have recent data (until today)
+        if (this.historicalFiltered) {
+            filteredStations = filteredStations.filter((station) => {
+                return !station.historical;
+            });
+        }
+        // show only stations which don't have recent data
+        else {
+            filteredStations = filteredStations.filter((station) => {
+                return station.historical;
+            })
+        }
+
+        this.filterStates.forEach((filterValue, filterKey) => {
+            if (filterValue) {
+                filteredStations = this.filterStationsByDataType(filteredStations, filterKey);
+            }
+        });
+
+        this.createStationMarkers(filteredStations);
     }
-    if (station === undefined) {
-      console.log("ID of: " + name + ", " + state + " not found!");
-      return undefined;
+
+    /**
+     * switches filterOption in filterStates map to reflect which filters are active
+     * @param filterOption dataCapability to switch state of filtering
+     */
+    switchFilterOption(filterOption: DataCapability): void {
+        let bool = this.filterStates.get(filterOption);
+        this.filterStates.set(filterOption, !bool);
     }
-    return station.id;
 
-  }
+    /**
+     * searches an array of stations for every station which holds a certain datatype in their
+     * capabilities attribute
+     * @param stations array to search in
+     * @param dataTypeToFilter to search for
+     * @returns array of stations with the searched datatype
+     */
+    filterStationsByDataType(stations: Station[], dataTypeToFilter: string): Station[] {
+        return stations.filter((station) =>
+            station.capabilities.some((capability) => capability.dataType === dataTypeToFilter)
+        );
+    }
 
+    /**
+     * set historical filter flag
+     */
+    filterHistorical(): void {
+        this.historicalFiltered = !this.historicalFiltered;
+    }
+
+    //------------------------------------------------------------------------------ Markers and Tooltips ---------------------------------------------
+
+    /**
+     * create map markers based on stations
+     */
+    createStationMarkers(stations: Station[]): void {
+        this.stationMarkers = stations.map((station) => {
+            return {
+                coordinates: station.location.coordinates,
+                tooltip: station.name,
+                icon: dwdStationIcon,
+                onClick: () => this.prepareStationInformation(station),
+            };
+        });
+    }
+
+    //------------------------------------------------------------------------------ Show Station Information -----------------------------------------
+
+    /**
+     * when clicking a station, extracs vital information for html template.
+     * Resets usedDataType and usedResolution to not show outdated information
+     * @param station object clicked
+     */
+    prepareStationInformation(station: Station): void {
+        this.station = station;
+
+        this.activatedFilters.forEach((filter) => {
+            let a = station.capabilities
+                .filter((element) => element.dataType === filter)
+                .map((element) => element.resolution)
+                .sort();
+
+            this.availableResolutions.set(filter, a);
+            this.clearStationData()
+        });
+    }
+
+    /**
+     * clear all station information to not 
+     * confuse them with new information
+     */
+    clearStationData(): void {
+        this.usedDataType = undefined;
+        this.usedResolution = undefined;
+        this.usedFrom = undefined;
+        this.usedUntil = undefined;
+    }
+
+    /**
+     * finds the lower and upper bound of time range
+     * of specified dataType and saves them to array
+     * @param dataType DataCapability to use
+     * @param resolution TimeResolution to use
+     */
+    createRangeOfTime(dataType: string, resolution: string): void {
+        if (this.station) {
+            this.station?.capabilities.find((element) => {
+                if (element.dataType === dataType && element.resolution === resolution) {
+                    this.availableTimeSlots[0] = this.formatTimestamp(element.availableFrom);
+                    this.availableTimeSlots[1] = this.formatTimestamp(element.availableUntil);
+                }
+            });
+        }
+    }
+
+    //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
+
+    setTypeAndResolution(dataType: string, resolution: string): void {
+        this.usedDataType = dataType;
+        this.usedResolution = resolution;
+    }
+
+    /**
+     * instructions for downloading the selected data.
+     * Uses global variables, thus it does not need parameters
+     * @returns if a global variable is not set -> the url can't be build
+     */
+    processWeatherInformation() {
+        if (!this.station) {
+            console.error("No Station Object initialized!");
+            return;
+        }
+
+        if (!this.usedDataType) {
+            console.error("No data type initialized!");
+            return;
+        }
+
+        if (!this.usedResolution) {
+            console.error("No resolution initialized!");
+            return;
+        }
+
+        if (!this.usedFrom) {
+            this.usedFrom = "00:00:00 25.07.2023";
+            alert(`No start time selected. Using ${this.usedFrom}`);
+            console.error(`Initialize query with ${this.usedFrom}!`);
+        }
+
+        if (!this.usedUntil) {
+            this.usedUntil = "00:00:00 26.07.2023";
+            alert(`No end time selected. Using ${this.usedUntil}`);
+            console.error(`Initialize query with ${this.usedUntil}!`);
+        }
+
+        if (this.checkRangeOfTime()) {
+            let unixStart = this.convertTimestampToUnix(this.usedFrom);
+            let unixEnd = this.convertTimestampToUnix(this.usedUntil);
+
+            let url = this.buildUrl(this.station.id, this.usedDataType, this.usedResolution, unixStart, unixEnd);
+
+            this.getWeatherData(url);
+        }
+
+        return;
+    }
+
+    /**
+     * help function, not to be called directly
+     * standardized processing function to build the url to retrieve stationary data
+     * @param stationId to find a unique station
+     * @param dataPoint kind of data to retrieve (precipitation etc.)
+     * @param timeResolution timely resolution (1 min, 5 min) to find the correct data
+     * @param from timestamp from when data shall be requested
+     * @param until timestamp until data is requested
+     * @returns if no stationID is used to safe resources
+     */
+    buildUrl(stationId: string, dataPoint: string, timeResolution: string, from?: number, until?: number): string {
+        let endpoint: string = `/${stationId}/${dataPoint}/${timeResolution}`;
+
+        if (from && until) {
+            endpoint += `?from=${from}&until=${until}`;
+        } else {
+            console.info("No period specified, request can take longer!");
+        }
+
+        return endpoint;
+    }
+
+    /**
+     * help function not to be called directly
+     * request the weather service for a station, time resolution and data point
+     * @param url the finished url to request from
+     */
+    getWeatherData(url: string) {
+        console.info("Start downloading!");
+
+        this.weatherService.fetchWeatherDataByStation(url.toString()).subscribe({
+            //TODO Discuss with Tim
+            next: (data) => {
+                this.weatherData = data;
+                console.log(this.weatherData);
+            },
+            error: (error) => {
+                console.log(error);
+            },
+            complete: () => {
+                console.info("Download finished");
+                // let user download file
+                this.createFile();
+            },
+        });
+    }
+
+    /**
+     * create file which user can download
+     * creates a function to bind to download button
+     * @this.downloadAvailable Flag to control if download is authorized
+     */
+    createFile(): void {
+        if (!this.downloadAvailable) {
+            console.log("Download of File deactivated!");
+            return;
+        }
+
+        const dataString = JSON.stringify(this.weatherData, null, 2); // Convert object to string
+
+        const blob = new Blob([dataString], { type: "application/json" }); // Specify correct MIME type
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        if (this.station) {
+            a.href = url;
+            a.download = `WISdoM_Weather_Data_${this.station.name}_${this.usedDataType}_${this.usedResolution}`; // Replace with your desired file name
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    }
+
+    //------------------------------------------------------------------------------ DatePicker Functions --------------------------------------------
+
+    /**
+     *handle event emitted by datepicker and extract the start and end date
+     * @param event emitted when both dates are selected in GUI
+     */
+    handleDatePickEvent(event: any) {
+        this.usedFrom = this.formatTimestamp(event.data.startDate);
+        this.usedUntil = this.formatTimestamp(event.data.endDate);
+    }
+
+    //------------------------------------------------------------------------------ Formatting Functions --------------------------------------------
+
+    /**
+     * transform the used time format to readable one
+     * @param timestamp point in time to reformat
+     * @returns a classical timestamp format
+     */
+    formatTimestamp(timestamp: string): string {
+        let date = new Date(timestamp);
+
+        let hours = String(date.getUTCHours()).padStart(2, "0");
+        let minutes = String(date.getUTCMinutes()).padStart(2, "0");
+        let seconds = String(date.getUTCSeconds()).padStart(2, "0");
+        let day = String(date.getUTCDate()).padStart(2, "0");
+        let month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based
+        let year = date.getUTCFullYear();
+
+        //
+        return `${hours}:${minutes}:${seconds} ${day}.${month}.${year}`;
+    }
+
+    /**
+     * Converts the timestamp being selected into seconds for request
+     * Disregards the Timezone because the dwd-service doesnt take that into account
+     * @param timestamp to be converted
+     * @returns time in seconds (unix timestamp)
+     */
+    convertTimestampToUnix(timestamp: string): number {
+        // Split the timestamp into date and time parts
+        const [time, date] = timestamp.split(" ");
+
+        // Parse the date and time components
+        const [hours, minutes, seconds] = time.split(":").map(Number);
+        const [day, month, year] = date.split(".").map(Number);
+
+        // Create a new Date object in UTC with the given components
+        const unixTime = Date.UTC(year, month - 1, day, hours, minutes, seconds) / 1000;
+
+        return unixTime;
+    }
+
+    /**
+     * checks if the selected timestamps are inside the range of available data of the source
+     * @returns true if they are, else not
+     */
+    checkRangeOfTime(): boolean {
+        if (this.usedFrom && this.usedUntil) {
+            const start_ts = this.convertTimestampToUnix(this.usedFrom);
+            const end_ts = this.convertTimestampToUnix(this.usedUntil);
+
+            const lower_bound = this.convertTimestampToUnix(this.availableTimeSlots[0]);
+            const upper_bound = this.convertTimestampToUnix(this.availableTimeSlots[1]);
+
+            if (lower_bound > start_ts || start_ts > upper_bound) {
+                alert(`starting timestamp: ${this.usedFrom} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
+                return false;
+            }
+
+            if (lower_bound > end_ts || end_ts > upper_bound) {
+                alert(`ending timestamp: ${this.usedUntil} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }
-
-
