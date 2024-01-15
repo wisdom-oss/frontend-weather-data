@@ -39,12 +39,12 @@ export enum TimeResolution {
 export enum DataCapability {
     Temperature = "air_temperature",
     Precipitation = "precipitation",
+    Solar = "solar",
     Moisture = "moisture",
     Pressure = "pressure",
     DewPoint = "dew_point",
     Soil = "soil",
     SoilTemperature = "soil_temperature",
-    Solar = "solar",
     Sun = "sun",
     Visibility = "visibility",
     Wind = "wind",
@@ -64,7 +64,7 @@ export enum DataCapability {
 
 /**
  * array of active filters
- * for every element a switch will be created filtering 
+ * for every element a switch will be created filtering
  * weather map based on the element
  */
 export const ActiveFilters: DataCapability[] = [
@@ -73,7 +73,19 @@ export const ActiveFilters: DataCapability[] = [
     DataCapability.Solar,
     DataCapability.Moisture,
     DataCapability.Pressure,
-    DataCapability.DewPoint,
+    DataCapability.SoilTemperature,
+    /* DataCapability.DewPoint,
+    DataCapability.Soil,
+    DataCapability.Sun,
     DataCapability.Visibility,
-    DataCapability.Soil
+    DataCapability.Wind,
+    DataCapability.ExtremeWind,
+    DataCapability.TestWind,
+    DataCapability.CloudType,
+    DataCapability.Cloudiness,
+    DataCapability.MorePrecipitation,
+    DataCapability.KL,
+    DataCapability.WeatherPhenomena,
+    DataCapability.MoreWeatherPhenomena,
+    DataCapability.WaterEquivalent, */
 ];

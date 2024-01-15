@@ -65,7 +65,7 @@ export class WeatherDataComponent implements OnInit {
     // flag to (de)activate the download function
     downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) { }
+    constructor(public weatherService: WeatherDataService) {}
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
@@ -114,7 +114,7 @@ export class WeatherDataComponent implements OnInit {
         else {
             filteredStations = filteredStations.filter((station) => {
                 return station.historical;
-            })
+            });
         }
 
         this.filterStates.forEach((filterValue, filterKey) => {
@@ -188,12 +188,12 @@ export class WeatherDataComponent implements OnInit {
                 .sort();
 
             this.availableResolutions.set(filter, a);
-            this.clearStationData()
+            this.clearStationData();
         });
     }
 
     /**
-     * clear all station information to not 
+     * clear all station information to not
      * confuse them with new information
      */
     clearStationData(): void {
@@ -412,12 +412,16 @@ export class WeatherDataComponent implements OnInit {
             const upper_bound = this.convertTimestampToUnix(this.availableTimeSlots[1]);
 
             if (lower_bound > start_ts || start_ts > upper_bound) {
-                alert(`starting timestamp: ${this.usedFrom} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
+                alert(
+                    `starting timestamp: ${this.usedFrom} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`
+                );
                 return false;
             }
 
             if (lower_bound > end_ts || end_ts > upper_bound) {
-                alert(`ending timestamp: ${this.usedUntil} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`);
+                alert(
+                    `ending timestamp: ${this.usedUntil} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`
+                );
                 return false;
             }
             return true;

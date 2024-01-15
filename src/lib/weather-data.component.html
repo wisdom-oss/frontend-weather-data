@@ -14,7 +14,7 @@
                     class="switch is-rounded is-primary"
                     (change)="filterHistorical(); showStations()"
                 />
-                <label for="filterSwitch-historical"> Historisch </label>
+                <label for="filterSwitch-historical"> {{ "weather-data.switches.historical" | translate }} </label>
             </div>
         </div>
         <!-- capability switches -->
@@ -58,13 +58,13 @@
                 <div *ngIf="station">
                     <!-- non statistical information -->
                     <div>
-                        <h1 class="title has-text-centered is-size-3">
+                        <h1 class="title has-text-centered is-size-4">
                             {{ station.name }}
                         </h1>
                         <div class="columns" *ngIf="station">
                             <div class="column is-third">
                                 <div class="tags has-addons is-centered">
-                                    <span class="tag is-dark">State </span>
+                                    <span class="tag is-dark">{{ "weather-data.tags.state" | translate }} </span>
                                     <span class="tag is-primary"> {{ station.state }} </span>
                                 </div>
                             </div>
@@ -76,9 +76,13 @@
                             </div>
                             <div class="column is-third">
                                 <div class="tags has-addons is-centered">
-                                    <span class="tag is-dark"> Historical </span>
+                                    <span class="tag is-dark"> {{ "weather-data.tags.historical" | translate }} </span>
                                     <span class="tag is-primary">
-                                        {{ station.historical ? "Yes" : "No" }}
+                                        {{
+                                            station.historical
+                                                ? ("weather-data.historicalTag.yes" | translate)
+                                                : ("weather-data.historicalTag.no" | translate)
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -117,13 +121,15 @@
                             <div class="columns" *ngIf="station">
                                 <div class="column is-half">
                                     <div class="tags has-addons">
-                                        <span class="tag is-dark">Datenart </span>
+                                        <span class="tag is-dark">{{ "weather-data.tags.dataKind" | translate }} </span>
                                         <span class="tag is-primary"> {{ usedDataType }} </span>
                                     </div>
                                 </div>
                                 <div class="column is-half">
                                     <div class="tags has-addons">
-                                        <span class="tag is-dark">Auflösung </span>
+                                        <span class="tag is-dark"
+                                            >{{ "weather-data.tags.resolution" | translate }}
+                                        </span>
                                         <span class="tag is-primary"> {{ usedResolution }} </span>
                                     </div>
                                 </div>
@@ -132,7 +138,9 @@
                             <div class="columns">
                                 <div class="column is-half">
                                     <div class="tags has-addons">
-                                        <span class="tag is-dark">Available from </span>
+                                        <span class="tag is-dark"
+                                            >{{ "weather-data.tags.availableFrom" | translate }}
+                                        </span>
                                         <span class="tag is-primary">
                                             {{ availableTimeSlots[0] }}
                                         </span>
@@ -140,7 +148,9 @@
                                 </div>
                                 <div class="column is-half">
                                     <div class="tags has-addons">
-                                        <span class="tag is-dark">Available until </span>
+                                        <span class="tag is-dark"
+                                            >{{ "weather-data.tags.availableUntil" | translate }}
+                                        </span>
                                         <span class="tag is-primary">
                                             {{ availableTimeSlots[1] }}
                                         </span>
@@ -158,7 +168,7 @@
                             </div>
 
                             <!-- download data-->
-                            <div class="has-text-centered mt-2">
+                            <div class="has-text-centered">
                                 <button
                                     class="button is-primary"
                                     [disabled]="!usedDataType"

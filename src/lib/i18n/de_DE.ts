@@ -9,6 +9,17 @@ export default {
         tags: {
             state: "Bundesland",
             historical: "Historisch",
+            dataKind: "Datenart",
+            resolution: "Auflösung",
+            availableFrom: "Verfügbar ab",
+            availableUntil: "Verfügbar bis",
+        },
+        switches: {
+            historical: "Historisch",
+        },
+        historicalTag: {
+            yes: "Ja",
+            no: "Nein",
         },
     },
 };
