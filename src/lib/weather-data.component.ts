@@ -385,7 +385,7 @@ export class WeatherDataComponent implements OnInit {
      * @param timestamp to be converted
      * @returns time in seconds (unix timestamp)
      */
-    convertTimestampToUnix(timestamp: string): number {
+    convertDateStringToUnix(dateString: string): number {
         // Split the timestamp into date and time parts
         const [time, date] = timestamp.split(" ");
 
