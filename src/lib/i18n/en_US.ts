@@ -18,8 +18,8 @@ export default {
             historical: "historical",
         },
         historicalTag: {
-            yes: "Ja",
-            no: "Nein",
+            yes: "Yes",
+            no: "No",
         },
     },
 };
