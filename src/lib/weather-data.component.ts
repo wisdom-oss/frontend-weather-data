@@ -65,7 +65,7 @@ export class WeatherDataComponent implements OnInit {
     // flag to (de)activate the download function
     downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) {}
+    constructor(public weatherService: WeatherDataService) { }
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
@@ -233,7 +233,7 @@ export class WeatherDataComponent implements OnInit {
      * Uses global variables, thus it does not need parameters
      * @returns if a global variable is not set -> the url can't be build
      */
-    processWeatherInformation() {
+    startWeatherDataDownload() {
         if (!this.station) {
             console.error("No Station Object initialized!");
             return;
@@ -262,8 +262,8 @@ export class WeatherDataComponent implements OnInit {
         }
 
         if (this.checkRangeOfTime()) {
-            let unixStart = this.convertTimestampToUnix(this.usedFrom);
-            let unixEnd = this.convertTimestampToUnix(this.usedUntil);
+            let unixStart = this.convertDateStringToUnix(this.usedFrom);
+            let unixEnd = this.convertDateStringToUnix(this.usedUntil);
 
             let url = this.buildUrl(this.station.id, this.usedDataType, this.usedResolution, unixStart, unixEnd);
 
@@ -388,7 +388,7 @@ export class WeatherDataComponent implements OnInit {
      */
     convertDateStringToUnix(dateString: string): number {
         // Split the timestamp into date and time parts
-        const [time, date] = timestamp.split(" ");
+        const [time, date] = dateString.split(" ");
 
         // Parse the date and time components
         const [hours, minutes, seconds] = time.split(":").map(Number);
@@ -406,11 +406,11 @@ export class WeatherDataComponent implements OnInit {
      */
     checkRangeOfTime(): boolean {
         if (this.usedFrom && this.usedUntil) {
-            const start_ts = this.convertTimestampToUnix(this.usedFrom);
-            const end_ts = this.convertTimestampToUnix(this.usedUntil);
+            const start_ts = this.convertDateStringToUnix(this.usedFrom);
+            const end_ts = this.convertDateStringToUnix(this.usedUntil);
 
-            const lower_bound = this.convertTimestampToUnix(this.availableTimeSlots[0]);
-            const upper_bound = this.convertTimestampToUnix(this.availableTimeSlots[1]);
+            const lower_bound = this.convertDateStringToUnix(this.availableTimeSlots[0]);
+            const upper_bound = this.convertDateStringToUnix(this.availableTimeSlots[1]);
 
             if (lower_bound > start_ts || start_ts > upper_bound) {
                 alert(
