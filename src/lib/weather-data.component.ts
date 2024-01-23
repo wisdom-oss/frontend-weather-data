@@ -159,6 +159,7 @@ export class WeatherDataComponent implements OnInit {
 
     /**
      * create map markers based on stations
+     * @param stations array of stations for marker creation
      */
     createStationMarkers(stations: Station[]): void {
         this.stationMarkers = stations.map((station) => {
