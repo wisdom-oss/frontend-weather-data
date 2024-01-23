@@ -4,7 +4,7 @@ export default {
             name: "Weather",
         },
         title: {
-            name: "German Weather Service",
+            name: "German Meteorological Service",
         },
         tags: {
             state: "State",
