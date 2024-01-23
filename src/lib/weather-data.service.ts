@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpContext } from "@angular/common/http";
-import { Router } from "@angular/router";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER, USE_CACHE } from "common";
 import { Observable } from "rxjs";
-import { Stations } from "./dwd-interfaces";
+import { Station } from "./dwd-interfaces";
 
 
 const API_PREFIX = "dwd";
@@ -27,30 +26,28 @@ export class WeatherDataService {
     .set(USE_ERROR_HANDLER, 1)
     .set(USE_CACHE, true);
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient) { }
 
-  getStations(url: string, ctx?: HttpContext): Observable<Stations> {
+  fetchStations(url: string, ctx?: HttpContext): Observable<Station[]> {
+
+    if (!url) {
+      return this.handleError("No URL given!");
+    }
+
     let finalUrl = API_PREFIX + url;
 
-    return this.http.get<Stations>(finalUrl, {
+    return this.http.get<Station[]>(finalUrl, {
       responseType: "json",
       context: ctx || this.ctx
     });
 
   }
 
-  getResolutions(url: string, ctx?: HttpContext): Observable<any> {
+  fetchWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
 
-    let requestOptions: any = {
-      context: ctx || this.ctx,
-      responseType: 'json',
-    };
-
-    return this.http.request<any>('get', API_PREFIX + url, requestOptions);
-
-  }
-
-  getWeatherDataByStation(url: string, ctx?: HttpContext): Observable<any> {
+    if (!url) {
+      return this.handleError("No URL given!");
+    }
 
     return this.http.get<any>(API_PREFIX + url, {
       responseType: "json",
@@ -59,6 +56,17 @@ export class WeatherDataService {
 
   }
 
+  /**
+     * creates an Observable with an error to subscribe to it and logs the information in the console.
+     * @param msg error meesage
+     * @returns observable with contained error.
+     */
+  handleError(msg: string): Observable<any> {
+
+    return new Observable((observer) => {
+      observer.error(new Error(msg));
+    });
+  }
 
 
 

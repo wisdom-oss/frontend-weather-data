@@ -1,25 +1,91 @@
-export interface timeResolutions {
-    "1_minute": string[];
-    "5_minutes": string[];
-    "10_minutes": string[];
-    "hourly": string[];
-    "subdaily": string[];
-    "daily": string[];
-    "monthly": string[];
-    "annual": string[];
-    "multi-annual": string[];
-};
-
-export type Stations = Station[];
-
+/**
+ * station object
+ */
 export interface Station {
-    id: string,
-    name: string,
-    state: string,
+    id: string;
+    name: string;
+    state: string;
     location: {
-        type: "Point",
-        coordinates: [number, number]
-    },
-    // TODO: use better type
-    capabilities: any
+        type: "Point";
+        coordinates: [number, number];
+    };
+    historical: boolean;
+    capabilities: {
+        dataType: string;
+        resolution: TimeResolution;
+        availableFrom: string; // Assuming ISO 8601 date-time format, example: "2023-01-01T00:00:00Z"
+        availableUntil: string; // Assuming ISO 8601 date-time format, example: "2023-02-01T00:00:00Z"
+    }[];
 }
+
+/**
+ * possible time resolutions
+ */
+export enum TimeResolution {
+    OneMinute = "1_minute",
+    FiveMinutes = "5_minutes",
+    TenMinutes = "10_minutes",
+    Hourly = "hourly",
+    Subdaily = "subdaily",
+    Daily = "daily",
+    Monthly = "monthly",
+    Annual = "annual",
+    MultiAnnual = "multi_annual",
+}
+
+/**
+ * possible data types
+ */
+export enum DataCapability {
+    Temperature = "air_temperature",
+    Precipitation = "precipitation",
+    Solar = "solar",
+    Moisture = "moisture",
+    Pressure = "pressure",
+    DewPoint = "dew_point",
+    Soil = "soil",
+    SoilTemperature = "soil_temperature",
+    Sun = "sun",
+    Visibility = "visibility",
+    Wind = "wind",
+    ExtremeWind = "extreme_wind",
+    TestWind = "wind_test",
+    CloudType = "cloud_type",
+    Cloudiness = "cloudiness",
+    MorePrecipitation = "more_precip",
+    KL = "kl",
+    WeatherPhenomena = "weather_phenomena",
+    MoreWeatherPhenomena = "more_weather_phenomena",
+    WaterEquivalent = "water_equiv",
+    WindSynop = "wind_synop",
+    ClimateIndices = "climate_indices", // not working
+    ExtremeTemperature = "extreme_temperatures", // not working
+}
+
+/**
+ * array of active filters
+ * for every element a switch will be created filtering
+ * weather map based on the element
+ */
+export const ActiveFilters: DataCapability[] = [
+    DataCapability.Temperature,
+    DataCapability.Precipitation,
+    DataCapability.Solar,
+    DataCapability.Moisture,
+    DataCapability.Pressure,
+    DataCapability.SoilTemperature,
+    /* DataCapability.DewPoint,
+    DataCapability.Soil,
+    DataCapability.Sun,
+    DataCapability.Visibility,
+    DataCapability.Wind,
+    DataCapability.ExtremeWind,
+    DataCapability.TestWind,
+    DataCapability.CloudType,
+    DataCapability.Cloudiness,
+    DataCapability.MorePrecipitation,
+    DataCapability.KL,
+    DataCapability.WeatherPhenomena,
+    DataCapability.MoreWeatherPhenomena,
+    DataCapability.WaterEquivalent, */
+];
