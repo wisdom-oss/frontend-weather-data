@@ -66,6 +66,7 @@ export enum DataCapability {
  * array of active filters
  * for every element a switch will be created filtering 
  * weather map based on the element
+ * use this to make extra filters available in the web page
  */
 export const ActiveFilters: DataCapability[] = [
     DataCapability.Temperature,
