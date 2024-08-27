@@ -13,7 +13,7 @@ export class WeatherDataComponent implements OnInit {
     BulmaCalendarMode = BulmaCalendarMode;
 
     //height of the map box
-    heightWeatherBox: string = "85vh";
+    heightWeatherBox: string = "100vh";
     heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
     heightDataTypeBox: string = "23vh";
@@ -376,7 +376,6 @@ export class WeatherDataComponent implements OnInit {
         let month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based
         let year = date.getUTCFullYear();
 
-        //
         return `${hours}:${minutes}:${seconds} ${day}.${month}.${year}`;
     }
 

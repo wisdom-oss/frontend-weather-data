@@ -7,6 +7,7 @@ export default {
             name: "German Meteorological Service",
         },
         tags: {
+            name: "Townname",
             state: "State",
             historical: "Historical",
             dataKind: "Data Type",

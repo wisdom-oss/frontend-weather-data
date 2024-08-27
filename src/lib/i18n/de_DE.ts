@@ -7,6 +7,7 @@ export default {
             name: "Deutscher Wetterdienst",
         },
         tags: {
+            name: "Ortsname",
             state: "Bundesland",
             historical: "Historisch",
             dataKind: "Datenart",
