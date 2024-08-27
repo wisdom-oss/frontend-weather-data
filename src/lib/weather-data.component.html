@@ -41,6 +41,7 @@
                         />
                         <label for="filterSwitch-{{ filterOption.key }}">
                             {{ filterOption.key }}
+                            <!-- ADD FURTHER -->
                         </label>
                     </div>
                 </div>
@@ -48,10 +49,14 @@
         </div>
         <!-- Information -->
         <div class="column is-one-quarter">
-            <div class="box">
+            <div class="box" [style]="{ height: heightWeatherMap }">
                 <div *ngIf="station">
                     <!-- Title -->
                     <h1 class="title has-text-centered is-size-4">{{ station.name }}, {{ station.state }}</h1>
+                    <br />
+                    <h2 class="title has-text-centered is-size-6">
+                        {{ "weather-data.title.name_attribute" | translate }}
+                    </h2>
                     <!-- drop down parameters -->
                     <div *ngFor="let type of availableResolutions | keyvalue">
                         <div class="dropdown is-hoverable">
@@ -79,7 +84,6 @@
                             </div>
                         </div>
                     </div>
-                    <br />
                     <br />
                     <!-- Availability parameters -->
                     <h2 class="has-text-centered">{{ usedResolution }} {{ usedDataType }}</h2>

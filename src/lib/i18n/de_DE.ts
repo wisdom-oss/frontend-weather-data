@@ -5,6 +5,7 @@ export default {
         },
         title: {
             name: "Deutscher Wetterdienst",
+            name_attribute: "Attribute",
         },
         tags: {
             name: "Ortsname",
@@ -17,6 +18,30 @@ export default {
         },
         switches: {
             historical: "Historisch",
+            air_temperature: "Temperatur",
+            precipitation: "Niederschlag",
+            solar: "Solar",
+            moisture: "Feuchtigkeit",
+            pressure: "Luftdruck",
+            dew_point: "Taupunkt",
+            soil: "Erde",
+            soil_temperature: "Erdtemperatur",
+            sun: "Sonne",
+            visibility: "Sichtbarkeit",
+            wind: "Wind",
+            extreme_wind: "Extremer Wind",
+            wind_test: "Testwind",
+            cloud_type: "Wolkentyp",
+            cloudiness: "Bewölkung",
+            more_precip: "Mehr Niederschlag",
+            kl: "KL",
+            weather_phenomena: "Wetterphänomene",
+            more_weather_phenomena: "Mehr Wetterphänomene",
+            water_equiv: "Wetteräquivalent",
+            wind_synop: "WindSynop",
+            climate_indices: "Klimaindizes",
+            extreme_temperatures: "Extremtemperaturen",
+
         },
         historicalTag: {
             yes: "Ja",

@@ -5,6 +5,8 @@ export default {
         },
         title: {
             name: "German Meteorological Service",
+            name_attribute: "Attributes",
+
         },
         tags: {
             name: "Townname",
@@ -17,6 +19,29 @@ export default {
         },
         switches: {
             historical: "historical",
+            air_temperature: "Temperature",
+            precipitation: "Precipitation",
+            solar: "Solar",
+            moisture: "Moisture",
+            pressure: "Pressure",
+            dew_point: "Dew Point",
+            soil: "Soil",
+            soil_temperature: "Soil Temperature",
+            sun: "Sun",
+            visibility: "Visibility",
+            wind: "Wind",
+            extreme_wind: "Extreme Wind",
+            wind_test: "Test Wind",
+            cloud_type: "Cloud Type",
+            cloudiness: "Cloudiness",
+            more_precip: "More Precipitation",
+            kl: "KL",
+            weather_phenomena: "Weather Phenomena",
+            more_weather_phenomena: "More Weather Phenomena",
+            water_equiv: "Weather Equivalent",
+            wind_synop: "WindSynop",
+            climate_indices: "Climate Indices",
+            extreme_temperatures: "Extreme Temperatures",
         },
         historicalTag: {
             yes: "Yes",
