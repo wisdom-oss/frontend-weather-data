@@ -6,7 +6,6 @@ export default {
         title: {
             name: "German Meteorological Service",
             name_attribute: "Attributes",
-
         },
         tags: {
             name: "Townname",
@@ -46,6 +45,17 @@ export default {
         historicalTag: {
             yes: "Yes",
             no: "No",
+        },
+        resolutions: {
+            "1_minute": "1 minute resolution",
+            "5_minutes": "5 minute resolution",
+            "10_minutes": "10 minute resolution",
+            subhourly: "sub hourly resolution",
+            hourly: "hourly resolution",
+            subdaily: "sub daily resolution",
+            daily: "daily resolution",
+            monthly: "monthly resolution",
+            yearly: "yearly resolution"
         },
     },
 };

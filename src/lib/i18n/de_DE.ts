@@ -41,11 +41,21 @@ export default {
             wind_synop: "WindSynop",
             climate_indices: "Klimaindizes",
             extreme_temperatures: "Extremtemperaturen",
-
         },
         historicalTag: {
             yes: "Ja",
             no: "Nein",
+        },
+        resolutions: {
+            "1_minute": "1 minütige Auflösung",
+            "5_minutes": "5 minütige Auflösung",
+            "10_minutes": "10 minütige Auflösung",
+            subhourly: "Mehrmals stündliche Auflösung",
+            hourly: "Stündliche Auflösung",
+            subdaily: "Mehrmals tägliche Auflösung",
+            daily: "Tägliche Auflösung",
+            monthly: "Monatliche Auflösung",
+            yearly: "Jährliche Auflösung"
         },
     },
 };
