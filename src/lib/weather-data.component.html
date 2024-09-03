@@ -5,7 +5,7 @@
             <!-- Map element-->
             <map
                 #map
-                height="{{ heightWeatherMap }}"
+                height="{{ heightWeatherBox }}"
                 [markers]="stationMarkers"
                 [layerSelectable]="false"
                 center="51.165691, 10.451526"
@@ -40,8 +40,7 @@
                             (change)="switchFilterOption(filterOption.key); showStations()"
                         />
                         <label for="filterSwitch-{{ filterOption.key }}">
-                            {{ filterOption.key }}
-                            <!-- ADD FURTHER -->
+                            {{ "weather-data.switches." + filterOption.key | translate }}
                         </label>
                     </div>
                 </div>
@@ -49,7 +48,7 @@
         </div>
         <!-- Information -->
         <div class="column is-one-quarter">
-            <div class="box" [style]="{ height: heightWeatherMap }">
+            <div class="box" [style]="{ height: heightWeatherBox }">
                 <div *ngIf="station">
                     <!-- Title -->
                     <h1 class="title has-text-centered is-size-4">{{ station.name }}, {{ station.state }}</h1>
@@ -71,45 +70,45 @@
                             <div class="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div class="dropdown-content">
                                     <div class="dropdown-item" *ngFor="let resolution of type.value">
-                                        <a
-                                            class="is-blue"
+                                        <button
+                                            class="button"
                                             (click)="
                                                 createRangeOfTime(type.key, resolution);
                                                 setTypeAndResolution(type.key, resolution)
                                             "
-                                            >{{ "weather-data.resolutions." + resolution | translate }}</a
                                         >
+                                            {{ "weather-data.resolutions." + resolution | translate }}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <br />
-                    <!-- Availability parameters -->
-                    <h2 class="has-text-centered">{{ usedResolution }} {{ usedDataType }}</h2>
-                    <br />
-                    <div class="columns">
-                        <div class="column is-half has-text-centered">
-                            {{ "weather-data.tags.availableFrom" | translate }} <br />
-                            {{ availableTimeSlots[0] }}
-                        </div>
-                        <div class="column is-half has-text-centered">
-                            {{ "weather-data.tags.availableUntil" | translate }} <br />
-                            {{ availableTimeSlots[1] }}
-                        </div>
-                    </div>
                     <!-- download box -->
-                    <div>
+                    <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="height: 30vh">
+                        <span class="tag is-primary is-normal">{{ usedResolution }}</span>
+                        <span class="tag is-info is-normal">{{ usedDataType }}</span>
                         <!-- Date Picker Time -->
                         <div class="has-text-centered">
                             <input
                                 type="date"
                                 [mode]="BulmaCalendarMode.DEFAULT"
-                                [options]="{ isRange: true }"
+                                [options]="{ isRange: true, showHeader: false }"
                                 (select)="handleDatePickEvent($event)"
                             />
                         </div>
-
+                        <!-- Availability features-->
+                        <div class="columns">
+                            <div class="column is-half has-text-centered">
+                                {{ "weather-data.tags.availableFrom" | translate }} <br />
+                                {{ availableTimeSlots[0] }}
+                            </div>
+                            <div class="column is-half has-text-centered">
+                                {{ "weather-data.tags.availableUntil" | translate }} <br />
+                                {{ availableTimeSlots[1] }}
+                            </div>
+                        </div>
                         <!-- download data-->
                         <div class="has-text-centered">
                             <br />

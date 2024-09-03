@@ -5,7 +5,7 @@ export default {
         },
         title: {
             name: "Deutscher Wetterdienst",
-            name_attribute: "Attribute",
+            name_attribute: "Attribute und Auflösung",
         },
         tags: {
             name: "Ortsname",
@@ -25,7 +25,7 @@ export default {
             pressure: "Luftdruck",
             dew_point: "Taupunkt",
             soil: "Erde",
-            soil_temperature: "Erdtemperatur",
+            soil_temperature: "Bodentemperatur",
             sun: "Sonne",
             visibility: "Sichtbarkeit",
             wind: "Wind",

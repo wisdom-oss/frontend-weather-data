@@ -13,11 +13,10 @@ export class WeatherDataComponent implements OnInit {
     BulmaCalendarMode = BulmaCalendarMode;
 
     //height of the map box
-    heightWeatherBox: string = "100vh";
+    heightWeatherBox: string = "85vh";
     heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
 
-    heightDataTypeBox: string = "23vh";
-    heightDownloadBox: string = "28vh";
+    heightDownloadBox: string = "60vh";
 
     // width of every box element rendered for the data types
     widthDatatypeBox: string = "9vw";

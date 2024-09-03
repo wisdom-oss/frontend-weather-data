@@ -5,7 +5,7 @@ export default {
         },
         title: {
             name: "German Meteorological Service",
-            name_attribute: "Attributes",
+            name_attribute: "Attributes and Resolutions",
         },
         tags: {
             name: "Townname",
@@ -17,7 +17,7 @@ export default {
             availableUntil: "Available until",
         },
         switches: {
-            historical: "historical",
+            historical: "Historical",
             air_temperature: "Temperature",
             precipitation: "Precipitation",
             solar: "Solar",
