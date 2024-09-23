@@ -52,22 +52,18 @@
                 <div *ngIf="station">
                     <!-- Title -->
                     <h1 class="title has-text-centered is-size-4">{{ station.name }}, {{ station.state }}</h1>
-                    <br />
                     <h2 class="title has-text-centered is-size-6">
                         {{ "weather-data.title.name_attribute" | translate }}
                     </h2>
                     <!-- drop down parameters -->
                     <div *ngFor="let type of availableResolutions | keyvalue">
-                        <div class="dropdown is-hoverable">
+                        <div class="dropdown is-hoverable is-fullwidth">
                             <div class="dropdown-trigger">
-                                <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                                <button class="button">
                                     <span>{{ "weather-data.switches." + type.key | translate }}</span>
-                                    <span class="icon is-small">
-                                        <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                    </span>
                                 </button>
                             </div>
-                            <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                            <div class="dropdown-menu" id="dropdown-menu1" role="menu">
                                 <div class="dropdown-content">
                                     <div class="dropdown-item" *ngFor="let resolution of type.value">
                                         <button
@@ -87,8 +83,10 @@
                     <br />
                     <!-- download box -->
                     <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="height: 30vh">
-                        <span class="tag is-primary is-normal">{{ usedDataType }}</span>
-                        <span class="tag is-info is-normal">{{ usedResolution }}</span>
+                        <div class="tags is-centered">
+                            <span class="tag is-primary">{{ usedDataType }}</span>
+                            <span class="tag is-info">{{ usedResolution }}</span>
+                        </div>
                         <!-- Date Picker Time -->
                         <div class="has-text-centered">
                             <input

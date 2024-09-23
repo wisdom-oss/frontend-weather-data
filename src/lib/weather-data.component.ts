@@ -3,6 +3,7 @@ import { Marker, BulmaCalendarMode } from "common";
 import { dwdStationIcon } from "./map-icons";
 import { WeatherDataService } from "./weather-data.service";
 import { Station, DataCapability, ActiveFilters } from "./dwd-interfaces";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: "lib-weather-data",
@@ -64,7 +65,7 @@ export class WeatherDataComponent implements OnInit {
     // flag to (de)activate the download function
     downloadAvailable: boolean = true;
 
-    constructor(public weatherService: WeatherDataService) { }
+    constructor(public weatherService: WeatherDataService, private translate: TranslateService) { }
 
     //------------------------------------------------------------------------------ Create Initial View -------------------------------------------
 
@@ -223,8 +224,16 @@ export class WeatherDataComponent implements OnInit {
     //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 
     setTypeAndResolution(dataType: string, resolution: string): void {
-        this.usedDataType = dataType;
-        this.usedResolution = resolution;
+
+        this.translate.get("weather-data.switches." + dataType).subscribe((value: string) => {
+            console.log(value)
+            this.usedDataType = value;
+        })
+
+        this.translate.get("weather-data.resolutions." + resolution).subscribe((value: string) => {
+            console.log(value)
+            this.usedResolution = value;
+        })
     }
 
     /**
