@@ -47,15 +47,15 @@ export default {
             no: "No",
         },
         resolutions: {
-            "1_minute": "1 minute resolution",
-            "5_minutes": "5 minute resolution",
-            "10_minutes": "10 minute resolution",
-            subhourly: "sub hourly resolution",
-            hourly: "hourly resolution",
-            subdaily: "sub daily resolution",
-            daily: "daily resolution",
-            monthly: "monthly resolution",
-            yearly: "yearly resolution"
+            "1_minute": "1 Minute Resolution",
+            "5_minutes": "5 Minute Resolution",
+            "10_minutes": "10 Minute Resolution",
+            subhourly: "Sub Hourly Resolution",
+            hourly: "Hourly Resolution",
+            subdaily: "Sub Daily Resolution",
+            daily: "Daily Resolution",
+            monthly: "Monthly Resolution",
+            yearly: "Yearly Resolution"
         },
     },
 };
