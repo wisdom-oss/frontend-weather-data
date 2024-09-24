@@ -16,7 +16,7 @@ export default {
             availableFrom: "Verfügbar ab",
             availableUntil: "Verfügbar bis",
         },
-        switches: {
+        attributes: {
             historical: "Historisch",
             air_temperature: "Temperatur",
             precipitation: "Niederschlag",

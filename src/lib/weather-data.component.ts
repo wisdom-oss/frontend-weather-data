@@ -15,12 +15,6 @@ export class WeatherDataComponent implements OnInit {
 
     //height of the map box
     heightWeatherBox: string = "85vh";
-    heightWeatherMap: string = ((80 / 100) * parseFloat(this.heightWeatherBox)).toString() + "vh";
-
-    heightDownloadBox: string = "60vh";
-
-    // width of every box element rendered for the data types
-    widthDatatypeBox: string = "9vw";
 
     // save all stations from dwd
     stations: Station[] = [];
@@ -186,7 +180,7 @@ export class WeatherDataComponent implements OnInit {
             let a = station.capabilities
                 .filter((element) => element.dataType === filter)
                 .map((element) => element.resolution)
-                .sort();
+                .sort((a, b) => a.localeCompare(b));
 
             this.availableResolutions.set(filter, a);
             this.clearStationData();
@@ -224,16 +218,8 @@ export class WeatherDataComponent implements OnInit {
     //------------------------------------------------------------------------------ Request weather data by station ----------------------------------
 
     setTypeAndResolution(dataType: string, resolution: string): void {
-
-        this.translate.get("weather-data.switches." + dataType).subscribe((value: string) => {
-            console.log(value)
-            this.usedDataType = value;
-        })
-
-        this.translate.get("weather-data.resolutions." + resolution).subscribe((value: string) => {
-            console.log(value)
-            this.usedResolution = value;
-        })
+        this.usedDataType = dataType
+        this.usedResolution = resolution
     }
 
     /**
@@ -277,8 +263,6 @@ export class WeatherDataComponent implements OnInit {
 
             this.getWeatherData(url);
         }
-
-        return;
     }
 
     /**
@@ -312,7 +296,6 @@ export class WeatherDataComponent implements OnInit {
         console.info("Start downloading!");
 
         this.weatherService.fetchWeatherDataByStation(url.toString()).subscribe({
-            //TODO Discuss with Tim
             next: (data) => {
                 this.weatherData = data;
                 console.log(this.weatherData);

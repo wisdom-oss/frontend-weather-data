@@ -24,7 +24,7 @@
                             (change)="filterHistorical(); showStations()"
                         />
                         <label for="filterSwitch-historical">
-                            {{ "weather-data.switches.historical" | translate }}
+                            {{ "weather-data.attributes.historical" | translate }}
                         </label>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                             (change)="switchFilterOption(filterOption.key); showStations()"
                         />
                         <label for="filterSwitch-{{ filterOption.key }}">
-                            {{ "weather-data.switches." + filterOption.key | translate }}
+                            {{ "weather-data.attributes." + filterOption.key | translate }}
                         </label>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         <div class="dropdown is-hoverable is-fullwidth">
                             <div class="dropdown-trigger">
                                 <button class="button">
-                                    <span>{{ "weather-data.switches." + type.key | translate }}</span>
+                                    <span>{{ "weather-data.attributes." + type.key | translate }}</span>
                                 </button>
                             </div>
                             <div class="dropdown-menu" id="dropdown-menu1" role="menu">
@@ -83,18 +83,13 @@
                     <br />
                     <!-- download box -->
                     <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="height: 30vh">
-                        <div class="tags is-centered">
-                            <span class="tag is-primary">{{ usedDataType }}</span>
-                            <span class="tag is-info">{{ usedResolution }}</span>
-                        </div>
-                        <!-- Date Picker Time -->
-                        <div class="has-text-centered">
-                            <input
-                                type="date"
-                                [mode]="BulmaCalendarMode.DEFAULT"
-                                [options]="{ isRange: true, showHeader: false }"
-                                (select)="handleDatePickEvent($event)"
-                            />
+                        <div *ngIf="usedResolution" class="tags is-centered">
+                            <span class="tag is-primary">{{
+                                "weather-data.attributes." + usedDataType | translate
+                            }}</span>
+                            <span class="tag is-info">{{
+                                "weather-data.resolutions." + usedResolution | translate
+                            }}</span>
                         </div>
                         <!-- Availability features-->
                         <div class="columns">
@@ -107,6 +102,16 @@
                                 {{ availableTimeSlots[1] }}
                             </div>
                         </div>
+                        <!-- Date Picker Time -->
+                        <div class="has-text-centered">
+                            <input
+                                type="date"
+                                [mode]="BulmaCalendarMode.DEFAULT"
+                                [options]="{ isRange: true, showHeader: false }"
+                                (select)="handleDatePickEvent($event)"
+                            />
+                        </div>
+
                         <!-- download data-->
                         <div class="has-text-centered">
                             <br />
