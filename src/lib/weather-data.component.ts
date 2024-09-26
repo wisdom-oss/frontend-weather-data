@@ -16,12 +16,13 @@ export class WeatherDataComponent implements OnInit {
         isRange: true,
         showHeader: false,
         dateFormat: "dd.MM.yyyy",
-        //showFooter: false
+        showFooter: false
     }
 
-    //height of the map box
+    // dynmic height of components
     heightWeatherBox: string = "85vh";
-    heightInfoBox: string = "90vh";
+    heightInfoBox: string = "88vh";
+    heightDiffInfoBox: string = "8vh";
 
     // save all stations from dwd
     stations: Station[] = [];
