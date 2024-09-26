@@ -13,8 +13,8 @@ export default {
             historical: "Historisch",
             dataKind: "Datenart",
             resolution: "Auflösung",
-            availableFrom: "Verfügbar ab",
-            availableUntil: "Verfügbar bis",
+            availableFrom: "Verfügbar ab:",
+            availableUntil: "Verfügbar bis:",
         },
         attributes: {
             historical: "Historisch",

@@ -13,8 +13,8 @@ export default {
             historical: "Historical",
             dataKind: "Data Type",
             resolution: "Resolution",
-            availableFrom: "Available from",
-            availableUntil: "Available until",
+            availableFrom: "Available from:",
+            availableUntil: "Available until:",
         },
         attributes: {
             historical: "Historical",
