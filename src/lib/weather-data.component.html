@@ -48,73 +48,80 @@
         </div>
         <!-- Information -->
         <div class="column is-one-quarter">
-            <div class="box" [style]="{ height: heightWeatherBox }">
+            <div class="box" [style]="{ height: heightInfoBox }">
                 <div *ngIf="station">
                     <!-- Title -->
                     <h1 class="title has-text-centered is-size-4">{{ station.name }}</h1>
                     <h2 class="title has-text-centered is-size-6">
                         {{ "weather-data.title.name_attribute" | translate }}
                     </h2>
-                    <!-- drop down parameters -->
-                    <div *ngFor="let type of availableResolutions | keyvalue">
-                        <div class="dropdown is-hoverable is-fullwidth">
-                            <div class="dropdown-trigger">
-                                <button class="button">
-                                    <span>{{ "weather-data.attributes." + type.key | translate }}</span>
-                                </button>
-                            </div>
-                            <div class="dropdown-menu" id="dropdown-menu1" role="menu">
-                                <div class="dropdown-content">
-                                    <div class="dropdown-item" *ngFor="let resolution of type.value">
-                                        <button
-                                            class="button"
-                                            (click)="
-                                                createRangeOfTime(type.key, resolution);
-                                                setTypeAndResolution(type.key, resolution)
-                                            "
-                                        >
-                                            {{ "weather-data.resolutions." + resolution | translate }}
-                                        </button>
+                    <div class="has-text-centered">
+                        <div *ngFor="let type of availableResolutions | keyvalue">
+                            <div class="dropdown is-hoverable is-fullwidth">
+                                <div class="dropdown-trigger">
+                                    <button class="button">
+                                        <span>{{ "weather-data.attributes." + type.key | translate }}</span>
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-menu1" role="menu">
+                                    <div class="dropdown-content">
+                                        <div class="dropdown-item" *ngFor="let resolution of type.value">
+                                            <button
+                                                class="button"
+                                                (click)="
+                                                    createRangeOfTime(type.key, resolution);
+                                                    setTypeAndResolution(type.key, resolution)
+                                                "
+                                            >
+                                                {{ "weather-data.resolutions." + resolution | translate }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <br />
-                    <!-- download box -->
-                    <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="height: 30vh">
-                        <div *ngIf="usedResolution" class="tags is-centered">
-                            <span class="tag is-primary">{{
-                                "weather-data.attributes." + usedDataType | translate
-                            }}</span>
-                            <span class="tag is-info">{{
-                                "weather-data.resolutions." + usedResolution | translate
-                            }}</span>
-                        </div>
-                        <!-- Availability features-->
+                    <!-- Download Box -->
+                    <div *ngIf="usedResolution" class="box">
                         <div class="columns">
-                            <div class="column is-half has-text-centered">
-                                {{ "weather-data.tags.availableFrom" | translate }} <br />
-                                {{ availableTimeSlots[0] }}
+                            <div class="column">
+                                <div class="control">
+                                    <span class="tag is-primary">{{
+                                        "weather-data.attributes." + usedDataType | translate
+                                    }}</span>
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">{{
+                                            "weather-data.tags.availableFrom" | translate
+                                        }}</span>
+                                        <span class="tag is-info">{{ availableDateFrom }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="column is-half has-text-centered">
-                                {{ "weather-data.tags.availableUntil" | translate }} <br />
-                                {{ availableTimeSlots[1] }}
+                            <div class="column">
+                                <div class="control">
+                                    <span class="tag is-primary">{{
+                                        "weather-data.resolutions." + usedResolution | translate
+                                    }}</span>
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">{{
+                                            "weather-data.tags.availableUntil" | translate
+                                        }}</span>
+                                        <span class="tag is-info">{{ availableDateUntil }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <!-- Date Picker Time -->
+                        <!--Date Picker-->
                         <div class="has-text-centered">
                             <input
                                 type="date"
                                 [mode]="BulmaCalendarMode.DEFAULT"
-                                [options]="{ isRange: true, showHeader: false }"
+                                [options]="calendarOptions"
                                 (select)="handleDatePickEvent($event)"
                             />
                         </div>
-
-                        <!-- download data-->
+                        <!-- Download Button -->
                         <div class="has-text-centered">
-                            <br />
                             <button
                                 class="button is-primary"
                                 [disabled]="!usedDataType"

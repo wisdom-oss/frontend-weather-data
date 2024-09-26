@@ -12,9 +12,16 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class WeatherDataComponent implements OnInit {
     BulmaCalendarMode = BulmaCalendarMode;
+    calendarOptions = {
+        isRange: true,
+        showHeader: false,
+        dateFormat: "dd.MM.yyyy",
+        //showFooter: false
+    }
 
     //height of the map box
     heightWeatherBox: string = "85vh";
+    heightInfoBox: string = "90vh";
 
     // save all stations from dwd
     stations: Station[] = [];
@@ -50,6 +57,12 @@ export class WeatherDataComponent implements OnInit {
 
     // save range of which data is available
     availableTimeSlots: string[] = [];
+
+    availableDateTimeFrom: string | undefined;
+    availableDateTimeUntil: string | undefined;
+
+    availableDateFrom: string | undefined;
+    availableDateUntil: string | undefined;
 
     //------------------------------------------------------------------------------ Weather Object ------------------------------------------------
 
@@ -196,6 +209,11 @@ export class WeatherDataComponent implements OnInit {
         this.usedResolution = undefined;
         this.usedFrom = undefined;
         this.usedUntil = undefined;
+        this.availableDateTimeFrom = undefined;
+        this.availableDateTimeUntil = undefined;
+        this.availableDateFrom = undefined;
+        this.availableDateUntil = undefined;
+
     }
 
     /**
@@ -208,8 +226,11 @@ export class WeatherDataComponent implements OnInit {
         if (this.station) {
             this.station?.capabilities.find((element) => {
                 if (element.dataType === dataType && element.resolution === resolution) {
-                    this.availableTimeSlots[0] = this.formatTimestamp(element.availableFrom);
-                    this.availableTimeSlots[1] = this.formatTimestamp(element.availableUntil);
+                    this.availableDateTimeFrom = this.formatTimestamp(element.availableFrom);
+                    this.availableDateTimeUntil = this.formatTimestamp(element.availableUntil);
+                    this.availableDateFrom = this.convertTimeslotToDate(element.availableFrom);
+                    this.availableDateUntil = this.convertTimeslotToDate(element.availableUntil);
+
                 }
             });
         }
@@ -346,6 +367,11 @@ export class WeatherDataComponent implements OnInit {
      * @param event emitted when both dates are selected in GUI
      */
     handleDatePickEvent(event: any) {
+
+        console.log(event.data.startDate)
+        console.log(event.data.endDate)
+
+
         this.usedFrom = this.formatTimestamp(event.data.startDate);
         this.usedUntil = this.formatTimestamp(event.data.endDate);
     }
@@ -395,28 +421,34 @@ export class WeatherDataComponent implements OnInit {
      * @returns true if they are, else not
      */
     checkRangeOfTime(): boolean {
-        if (this.usedFrom && this.usedUntil) {
+        if (this.usedFrom && this.usedUntil && this.availableDateTimeFrom && this.availableDateTimeUntil) {
             const start_ts = this.convertDateStringToUnix(this.usedFrom);
             const end_ts = this.convertDateStringToUnix(this.usedUntil);
 
-            const lower_bound = this.convertDateStringToUnix(this.availableTimeSlots[0]);
-            const upper_bound = this.convertDateStringToUnix(this.availableTimeSlots[1]);
+            const lower_bound = this.convertDateStringToUnix(this.availableDateTimeFrom);
+            const upper_bound = this.convertDateStringToUnix(this.availableDateTimeUntil);
 
             if (lower_bound > start_ts || start_ts > upper_bound) {
                 alert(
-                    `starting timestamp: ${this.usedFrom} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`
+                    `starting timestamp: ${this.usedFrom} is not between \n ${this.availableDateTimeFrom} and ${this.availableDateTimeUntil}`
                 );
                 return false;
             }
 
             if (lower_bound > end_ts || end_ts > upper_bound) {
                 alert(
-                    `ending timestamp: ${this.usedUntil} is not between \n ${this.availableTimeSlots[0]} and ${this.availableTimeSlots[1]}`
+                    `ending timestamp: ${this.usedUntil} is not between \n ${this.availableDateTimeFrom} and ${this.availableDateTimeUntil}`
                 );
                 return false;
             }
             return true;
         }
         return false;
+    }
+
+    convertTimeslotToDate(timeslot: string) {
+        let date = new Date(timeslot);
+
+        return date.toLocaleDateString();
     }
 }
