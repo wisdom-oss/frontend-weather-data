@@ -53,7 +53,6 @@
                 [style]="{ height: heightInfoBox }"
             >
                 <div>
-                    <!-- Title -->
                     <h1 class="title has-text-centered is-size-4">
                         {{ "weather-data.title.name_attribute" | translate }}
                     </h1>
@@ -91,7 +90,7 @@
                                 {{ "weather-data.tags.availableFrom" | translate }}
                             </p>
                             <p style="color: rgb(255, 255, 255)">
-                                {{ dateRangeRepresentationFrom }}
+                                {{ availableRangeFrom }}
                             </p>
                         </div>
                         <div class="column is-half has-text-centered">
@@ -99,7 +98,7 @@
                                 {{ "weather-data.tags.availableUntil" | translate }}
                             </p>
                             <p style="color: rgb(255, 255, 255)">
-                                {{ dateRangeRepresentationUntil }}
+                                {{ availableRangeUntil }}
                             </p>
                         </div>
                     </div>
@@ -114,52 +113,38 @@
                     </div>
                 </div>
                 <div>
-                    <div>
-                        <div class="tags has-addons">
-                            <div class="tag is-dark">
-                                <span> {{ "weather-data.tags.name" | translate }} </span>
-                            </div>
-                            <div class="tag is-primary" *ngIf="station">
-                                <span> {{ station.name }} </span>
-                            </div>
+                    <div class="tags has-addons">
+                        <div class="tag is-dark">
+                            <span> {{ "weather-data.tags.name" | translate }} </span>
                         </div>
-                        <div class="tags has-addons">
-                            <div class="tag is-dark">
-                                <span> {{ "weather-data.tags.dataKind" | translate }} </span>
-                            </div>
-                            <div class="tag is-primary" *ngIf="usedDataType">
-                                <span> {{ "weather-data.attributes." + usedDataType | translate }} </span>
-                            </div>
+                        <div class="tag is-primary" *ngIf="station">
+                            <span> {{ station.name }} </span>
                         </div>
-                        <div class="tags has-addons">
-                            <div class="tag is-dark">
-                                <span> {{ "weather-data.tags.resolution" | translate }} </span>
-                            </div>
-                            <div class="tag is-primary" *ngIf="usedResolution">
-                                <span> {{ "weather-data.resolutions." + usedResolution | translate }} </span>
-                            </div>
+                    </div>
+                    <div class="tags has-addons">
+                        <div class="tag is-dark">
+                            <span> {{ "weather-data.tags.dataKind" | translate }} </span>
                         </div>
-                        <div class="tags has-addons">
-                            <div class="tag is-dark">
-                                <span> {{ "weather-data.tags.chosenDateStart" | translate }} </span>
-                            </div>
-                            <div class="tag is-primary" *ngIf="selectedCalendarDateFrom">
-                                <span> {{ selectedCalendarDateFrom }} </span>
-                            </div>
+                        <div class="tag is-primary" *ngIf="usedDataType">
+                            <span> {{ "weather-data.attributes." + usedDataType | translate }} </span>
                         </div>
-                        <div class="tags has-addons">
-                            <div class="tag is-dark">
-                                <span> {{ "weather-data.tags.chosenDateEnd" | translate }} </span>
-                            </div>
-                            <div class="tag is-primary" *ngIf="selectedCalendarDateUntil">
-                                <span> {{ selectedCalendarDateUntil }} </span>
-                            </div>
+                    </div>
+                    <div class="tags has-addons">
+                        <div class="tag is-dark">
+                            <span> {{ "weather-data.tags.resolution" | translate }} </span>
+                        </div>
+                        <div class="tag is-primary" *ngIf="usedResolution">
+                            <span> {{ "weather-data.resolutions." + usedResolution | translate }} </span>
                         </div>
                     </div>
                 </div>
                 <!-- Download Button -->
                 <div class="has-text-centered">
-                    <button class="button is-primary" [disabled]="" (click)="startWeatherDataDownload()">
+                    <button
+                        class="button is-primary"
+                        [disabled]="!usedDataType && !usedResolution && !selectedDateStart && !selectedDateEnd"
+                        (click)="startWeatherDataDownload()"
+                    >
                         Download
                     </button>
                 </div>

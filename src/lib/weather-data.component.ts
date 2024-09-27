@@ -54,22 +54,13 @@ export class WeatherDataComponent implements OnInit {
 
     //------------------------------------------------------------------------------ New Timestamp Format ------------------------------------------
 
-    // ISO 8601 Format from Bulma Calendar
-    selectedCalendarDatetimeFrom: string | undefined;
-    selectedCalendarDatetimeUntil: string | undefined;
+    // Date Representation for Range
+    availableRangeFrom: string | undefined;
+    availableRangeUntil: string | undefined;
 
-    // Date Representation of selected Dates
-    selectedCalendarDateFrom: string | undefined
-    selectedCalendarDateUntil: string | undefined
-
-    // ISO 8601 Format from Bulma Calendar
-    availableDatetimeFrom: string | undefined;
-    availableDatetimeUntil: string | undefined;
-
-    // Represent Datetime as Date in the html
-    dateRangeRepresentationFrom: string | undefined;
-    dateRangeRepresentationUntil: string | undefined;
-
+    // Date Representation for Selected
+    selectedDateStart: string | undefined;
+    selectedDateEnd: string | undefined;
 
     //------------------------------------------------------------------------------ Weather Object ------------------------------------------------
 
@@ -220,15 +211,11 @@ export class WeatherDataComponent implements OnInit {
         this.usedDataType = undefined;
         this.usedResolution = undefined;
 
-        this.selectedCalendarDatetimeFrom = undefined;
-        this.selectedCalendarDatetimeUntil = undefined;
+        this.availableRangeFrom = undefined;
+        this.availableRangeUntil = undefined;
 
-        this.availableDatetimeFrom = undefined;
-        this.availableDatetimeUntil = undefined;
-
-        this.dateRangeRepresentationFrom = undefined;
-        this.dateRangeRepresentationUntil = undefined;
-
+        this.selectedDateStart = undefined;
+        this.selectedDateEnd = undefined;
     }
 
     /**
@@ -241,10 +228,14 @@ export class WeatherDataComponent implements OnInit {
         if (this.station) {
             this.station?.capabilities.find((element) => {
                 if (element.dataType === dataType && element.resolution === resolution) {
-                    this.availableDatetimeFrom = element.availableFrom;
-                    this.availableDatetimeUntil = element.availableUntil;
-                    this.dateRangeRepresentationFrom = this.convertDatetimetoDate(element.availableFrom);
-                    this.dateRangeRepresentationUntil = this.convertDatetimetoDate(element.availableUntil);
+                    this.availableRangeFrom = this.convertDatetimetoDate(element.availableFrom);
+                    this.availableRangeUntil = this.convertDatetimetoDate(element.availableUntil);
+
+                    console.log(element.availableFrom)
+                    console.log(element.availableUntil)
+                    console.log(this.availableRangeFrom)
+                    console.log(this.availableRangeUntil)
+
 
                 }
             });
@@ -258,57 +249,53 @@ export class WeatherDataComponent implements OnInit {
      * @param event emitted when both dates are selected in GUI
      */
     handleDatePickEvent(event: any) {
-
-        this.selectedCalendarDatetimeFrom = (event.data.startDate).toISOString()
-        this.selectedCalendarDatetimeUntil = event.data.endDate.toISOString()
-
-        this.selectedCalendarDateFrom = this.convertDatetimetoDate(event.data.startDate)
-        this.selectedCalendarDateUntil = this.convertDatetimetoDate(event.data.endDate)
-
+        this.selectedDateStart = this.convertDatetimetoDate(event.data.startDate)
+        this.selectedDateEnd = this.convertDatetimetoDate(event.data.endDate)
     }
 
     //------------------------------------------------------------------------------ Formatting Functions --------------------------------------------
-
-    /**
-     * Converts the timestamp being selected into seconds for request
-     * Disregards the Timezone because the dwd-service doesnt take that into account
-     * @param timestamp to be converted
-     * @returns time in seconds (unix timestamp)
-     */
-    convertDatetimeToUnixTime(datetimeString: string): number {
-        const date = new Date(datetimeString);
-
-        return Math.floor(date.getTime() / 1000)
-    }
 
     /**
      * checks if the selected timestamps are inside the range of available data of the source
      * @returns true if they are, else not
      */
     checkRangeOfTime(): boolean {
-        if (this.selectedCalendarDatetimeFrom && this.selectedCalendarDatetimeUntil && this.availableDatetimeFrom && this.availableDatetimeUntil) {
-            const start_ts = this.convertDatetimeToUnixTime(this.selectedCalendarDatetimeFrom);
-            const end_ts = this.convertDatetimeToUnixTime(this.selectedCalendarDatetimeUntil);
-
-            const lower_bound = this.convertDatetimeToUnixTime(this.availableDatetimeFrom);
-            const upper_bound = this.convertDatetimeToUnixTime(this.availableDatetimeUntil);
-
-            if (lower_bound > start_ts || start_ts > upper_bound) {
-                alert(
-                    `Starting timestamp: ${this.convertDatetimetoDate(this.selectedCalendarDatetimeFrom)} is not between \n ${this.convertDatetimetoDate(this.availableDatetimeFrom)} and ${this.convertDatetimetoDate(this.availableDatetimeUntil)}`
-                );
-                return false;
-            }
-
-            if (lower_bound > end_ts || end_ts > upper_bound) {
-                alert(
-                    `Ending timestamp: ${this.convertDatetimetoDate(this.selectedCalendarDatetimeUntil)} is not between \n ${this.convertDatetimetoDate(this.availableDatetimeFrom)} and ${this.convertDatetimetoDate(this.availableDatetimeUntil)}`
-                );
-                return false;
-            }
-            return true;
+        if (!this.availableRangeFrom || !this.availableRangeUntil || !this.selectedDateStart || !this.selectedDateEnd) {
+            return false;
         }
-        return false;
+
+        let lower_bound = this.convertDateStringToUnixTime(this.availableRangeFrom)
+        let upper_bound = this.convertDateStringToUnixTime(this.availableRangeUntil)
+
+        let start_ts = this.convertDateStringToUnixTime(this.selectedDateStart)
+        let end_ts = this.convertDateStringToUnixTime(this.selectedDateEnd)
+
+        if (!this.checkRangeBetween(start_ts, lower_bound, upper_bound)) {
+            alert(
+                `${this.selectedDateStart} is not between ${this.availableRangeFrom} and ${this.availableRangeUntil}`
+            );
+            return false;
+        }
+
+        if (!this.checkRangeBetween(end_ts, lower_bound, upper_bound)) {
+            alert(
+                `${this.selectedDateEnd} is not between ${this.availableRangeFrom} and ${this.availableRangeUntil}`
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * checks if a target value x is inbetween two other numbers 
+     * @param x target value
+     * @param min lower bound
+     * @param max upper bound
+     * @returns true when in range, else false
+     */
+    checkRangeBetween(x: number, min: number, max: number): boolean {
+        return x >= min && x <= max
     }
 
     /**
@@ -326,6 +313,22 @@ export class WeatherDataComponent implements OnInit {
 
         // Return formatted date in dd.mm.yyyy format
         return `${day}.${month}.${year}`;
+    }
+
+    /**
+     * Converts the timestamp being selected into seconds for request
+     * Disregards the Timezone because the dwd-service doesnt take that into account
+     * @param timestamp to be converted
+     * @returns time in seconds (unix timestamp)
+     */
+    convertDateStringToUnixTime(dateString: string): number {
+        let [day, month, year] = dateString.split('.');
+        let newFormat = new Date(`${year}-${month}-${day}`);
+
+        console.log(newFormat)
+        console.log(Math.floor(newFormat.getTime() / 1000))
+
+        return Math.floor(newFormat.getTime() / 1000)
     }
 
 
@@ -352,13 +355,13 @@ export class WeatherDataComponent implements OnInit {
             return;
         }
 
-        if (!this.selectedCalendarDatetimeFrom) {
+        if (!this.selectedDateStart) {
             alert(`No Start Time selected.`);
             console.error(`Start Time not initialized`);
             return;
         }
 
-        if (!this.selectedCalendarDatetimeUntil) {
+        if (!this.selectedDateEnd) {
 
             alert(`No end time selected.`);
             console.error(`End Time not initialized`);
@@ -366,8 +369,8 @@ export class WeatherDataComponent implements OnInit {
         }
 
         if (this.checkRangeOfTime()) {
-            let unixStart = this.convertDatetimeToUnixTime(this.selectedCalendarDatetimeFrom);
-            let unixEnd = this.convertDatetimeToUnixTime(this.selectedCalendarDatetimeUntil);
+            let unixStart = this.convertDateStringToUnixTime(this.selectedDateStart);
+            let unixEnd = this.convertDateStringToUnixTime(this.selectedDateEnd);
 
             let url = this.buildUrl(this.station.id, this.usedDataType, this.usedResolution, unixStart, unixEnd);
 
@@ -441,7 +444,7 @@ export class WeatherDataComponent implements OnInit {
 
         if (this.station) {
             a.href = url;
-            a.download = `WISdoM_Weather_Data_${this.station.name}_${this.usedDataType}_${this.usedResolution}_${this.selectedCalendarDatetimeFrom}_${this.selectedCalendarDatetimeUntil}`; // Replace with your desired file name
+            a.download = `WISdoM_Weather_Data_${this.station.name}_${this.usedDataType}_${this.usedResolution}_${this.selectedDateStart}_${this.selectedDateEnd}`; // Replace with your desired file name
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
