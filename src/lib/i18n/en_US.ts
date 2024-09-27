@@ -4,17 +4,17 @@ export default {
             name: "Weather",
         },
         title: {
-            name: "German Meteorological Service",
             name_attribute: "Attributes and Resolutions",
         },
         tags: {
-            name: "Townname",
-            state: "State",
+            name: "Name",
             historical: "Historical",
-            dataKind: "Data Type",
+            dataKind: "Attribute",
             resolution: "Resolution",
             availableFrom: "Available from:",
             availableUntil: "Available until:",
+            chosenDateStart: "Chosen Start Date",
+            chosenDateEnd: "Chosen End Date",
         },
         attributes: {
             historical: "Historical",

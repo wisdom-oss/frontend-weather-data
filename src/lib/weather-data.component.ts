@@ -16,7 +16,7 @@ export class WeatherDataComponent implements OnInit {
         isRange: true,
         showHeader: false,
         dateFormat: "dd.MM.yyyy",
-        showFooter: false
+        showFooter: false,
     }
 
     // dynmic height of components
@@ -57,6 +57,10 @@ export class WeatherDataComponent implements OnInit {
     // ISO 8601 Format from Bulma Calendar
     selectedCalendarDatetimeFrom: string | undefined;
     selectedCalendarDatetimeUntil: string | undefined;
+
+    // Date Representation of selected Dates
+    selectedCalendarDateFrom: string | undefined
+    selectedCalendarDateUntil: string | undefined
 
     // ISO 8601 Format from Bulma Calendar
     availableDatetimeFrom: string | undefined;
@@ -245,8 +249,6 @@ export class WeatherDataComponent implements OnInit {
                 }
             });
         }
-
-
     }
 
     //------------------------------------------------------------------------------ DatePicker Functions --------------------------------------------
@@ -259,10 +261,11 @@ export class WeatherDataComponent implements OnInit {
 
         this.selectedCalendarDatetimeFrom = (event.data.startDate).toISOString()
         this.selectedCalendarDatetimeUntil = event.data.endDate.toISOString()
+
+        this.selectedCalendarDateFrom = this.convertDatetimetoDate(event.data.startDate)
+        this.selectedCalendarDateUntil = this.convertDatetimetoDate(event.data.endDate)
+
     }
-
-
-
 
     //------------------------------------------------------------------------------ Formatting Functions --------------------------------------------
 

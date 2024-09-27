@@ -1,139 +1,169 @@
 <div>
-  <div class="columns">
-    <!-- Map and Switches -->
-    <div class="column is-three-quarters">
-      <!-- Map element-->
-      <map
-        #map
-        height="{{ heightWeatherBox }}"
-        [markers]="stationMarkers"
-        [layerSelectable]="false"
-        center="51.165691, 10.451526"
-        zoom="6"
-      ></map>
-      <!-- Switches -->
-      <div class="columns is-multiline">
-        <!-- historical switch -->
-        <div class="column">
-          <div class="field">
-            <input
-              id="filterSwitch-historical"
-              type="checkbox"
-              name="filterSwitch-historical"
-              class="switch is-rounded is-primary"
-              (change)="filterHistorical(); showStations()"
-            />
-            <label for="filterSwitch-historical">
-              {{ "weather-data.attributes.historical" | translate }}
-            </label>
-          </div>
-        </div>
-        <!-- Capability switches -->
-        <div
-          class="column"
-          *ngFor="let filterOption of filterStates | keyvalue"
-        >
-          <div class="field">
-            <input
-              id="filterSwitch-{{ filterOption.key }}"
-              type="checkbox"
-              name="filterSwitch-{{ filterOption.key }}"
-              class="switch is-rounded"
-              [checked]="filterOption.value"
-              (change)="switchFilterOption(filterOption.key); showStations()"
-            />
-            <label for="filterSwitch-{{ filterOption.key }}">
-              {{ "weather-data.attributes." + filterOption.key | translate }}
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Information -->
-    <div class="column is-one-quarter">
-      <div
-        class="box is-flex is-flex-direction-column is-justify-content-space-between"
-        [style]="{ height: heightInfoBox }"
-      >
-        <div>
-          <!-- Title -->
-          <h1 class="title has-text-centered is-size-4">
-            {{ "weather-data.title.name_attribute" | translate }}
-          </h1>
-          <!--Drop Down Menu Resolutions -->
-          <div class="has-text-centered" style="min-height: 30vh">
-            <div *ngFor="let type of availableResolutions | keyvalue">
-              <div class="dropdown is-hoverable is-fullwidth">
-                <div class="dropdown-trigger">
-                  <button class="button">
-                    <span>{{
-                      "weather-data.attributes." + type.key | translate
-                    }}</span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu1" role="menu">
-                  <div class="dropdown-content">
-                    <div
-                      class="dropdown-item"
-                      *ngFor="let resolution of type.value"
-                    >
-                      <button
-                        class="button"
-                        (click)="
-                          createRangeOfTime(type.key, resolution);
-                          setTypeAndResolution(type.key, resolution)
-                        "
-                      >
-                        {{
-                          "weather-data.resolutions." + resolution | translate
-                        }}
-                      </button>
+    <div class="columns">
+        <!-- Map and Switches -->
+        <div class="column is-three-quarters">
+            <!-- Map element-->
+            <map
+                #map
+                height="{{ heightWeatherBox }}"
+                [markers]="stationMarkers"
+                [layerSelectable]="false"
+                center="51.165691, 10.451526"
+                zoom="6"
+            ></map>
+            <!-- Switches -->
+            <div class="columns is-multiline">
+                <!-- historical switch -->
+                <div class="column">
+                    <div class="field">
+                        <input
+                            id="filterSwitch-historical"
+                            type="checkbox"
+                            name="filterSwitch-historical"
+                            class="switch is-rounded is-primary"
+                            (change)="filterHistorical(); showStations()"
+                        />
+                        <label for="filterSwitch-historical">
+                            {{ "weather-data.attributes.historical" | translate }}
+                        </label>
                     </div>
-                  </div>
                 </div>
-              </div>
+                <!-- Capability switches -->
+                <div class="column" *ngFor="let filterOption of filterStates | keyvalue">
+                    <div class="field">
+                        <input
+                            id="filterSwitch-{{ filterOption.key }}"
+                            type="checkbox"
+                            name="filterSwitch-{{ filterOption.key }}"
+                            class="switch is-rounded"
+                            [checked]="filterOption.value"
+                            (change)="switchFilterOption(filterOption.key); showStations()"
+                        />
+                        <label for="filterSwitch-{{ filterOption.key }}">
+                            {{ "weather-data.attributes." + filterOption.key | translate }}
+                        </label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <!-- Download Box -->
-          <div class="columns" [style]="{ height: heightDiffInfoBox }">
-            <div class="column is-half has-text-centered">
-              <p>
-                {{ "weather-data.tags.availableFrom" | translate }}
-              </p>
-              <p>
-                {{ dateRangeRepresentationFrom }}
-              </p>
-            </div>
-            <div class="column is-half has-text-centered">
-              <p>
-                {{ "weather-data.tags.availableUntil" | translate }}
-              </p>
-              <p>
-                {{ dateRangeRepresentationUntil }}
-              </p>
-            </div>
-          </div>
-          <!--Date Picker-->
-          <div class="has-text-centered">
-            <input
-              type="date"
-              [mode]="BulmaCalendarMode.DEFAULT"
-              [options]="calendarOptions"
-              (select)="handleDatePickEvent($event)"
-            />
-          </div>
         </div>
-        <!-- Download Button -->
-        <div class="has-text-centered">
-          <button
-            class="button is-primary"
-            [disabled]=""
-            (click)="startWeatherDataDownload()"
-          >
-            Download
-          </button>
+        <!-- Information -->
+        <div class="column is-one-quarter">
+            <div
+                class="box is-flex is-flex-direction-column is-justify-content-space-between"
+                [style]="{ height: heightInfoBox }"
+            >
+                <div>
+                    <!-- Title -->
+                    <h1 class="title has-text-centered is-size-4">
+                        {{ "weather-data.title.name_attribute" | translate }}
+                    </h1>
+                    <!--Drop Down Menu Resolutions -->
+                    <div class="has-text-centered" style="min-height: 30vh">
+                        <div *ngFor="let type of availableResolutions | keyvalue">
+                            <div class="dropdown is-hoverable is-fullwidth">
+                                <div class="dropdown-trigger">
+                                    <button class="button">
+                                        <span>{{ "weather-data.attributes." + type.key | translate }}</span>
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu" id="dropdown-menu1" role="menu">
+                                    <div class="dropdown-content">
+                                        <div class="dropdown-item" *ngFor="let resolution of type.value">
+                                            <button
+                                                class="button"
+                                                (click)="
+                                                    createRangeOfTime(type.key, resolution);
+                                                    setTypeAndResolution(type.key, resolution)
+                                                "
+                                            >
+                                                {{ "weather-data.resolutions." + resolution | translate }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Download Box -->
+                    <div class="columns" [style]="{ height: heightDiffInfoBox }">
+                        <div class="column is-half has-text-centered">
+                            <p style="color: rgb(255, 255, 255)">
+                                {{ "weather-data.tags.availableFrom" | translate }}
+                            </p>
+                            <p style="color: rgb(255, 255, 255)">
+                                {{ dateRangeRepresentationFrom }}
+                            </p>
+                        </div>
+                        <div class="column is-half has-text-centered">
+                            <p style="color: rgb(255, 255, 255)">
+                                {{ "weather-data.tags.availableUntil" | translate }}
+                            </p>
+                            <p style="color: rgb(255, 255, 255)">
+                                {{ dateRangeRepresentationUntil }}
+                            </p>
+                        </div>
+                    </div>
+                    <!--Date Picker-->
+                    <div class="has-text-centered">
+                        <input
+                            type="date"
+                            [mode]="BulmaCalendarMode.DEFAULT"
+                            [options]="calendarOptions"
+                            (select)="handleDatePickEvent($event)"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <div class="tags has-addons">
+                            <div class="tag is-dark">
+                                <span> {{ "weather-data.tags.name" | translate }} </span>
+                            </div>
+                            <div class="tag is-primary" *ngIf="station">
+                                <span> {{ station.name }} </span>
+                            </div>
+                        </div>
+                        <div class="tags has-addons">
+                            <div class="tag is-dark">
+                                <span> {{ "weather-data.tags.dataKind" | translate }} </span>
+                            </div>
+                            <div class="tag is-primary" *ngIf="usedDataType">
+                                <span> {{ "weather-data.attributes." + usedDataType | translate }} </span>
+                            </div>
+                        </div>
+                        <div class="tags has-addons">
+                            <div class="tag is-dark">
+                                <span> {{ "weather-data.tags.resolution" | translate }} </span>
+                            </div>
+                            <div class="tag is-primary" *ngIf="usedResolution">
+                                <span> {{ "weather-data.resolutions." + usedResolution | translate }} </span>
+                            </div>
+                        </div>
+                        <div class="tags has-addons">
+                            <div class="tag is-dark">
+                                <span> {{ "weather-data.tags.chosenDateStart" | translate }} </span>
+                            </div>
+                            <div class="tag is-primary" *ngIf="selectedCalendarDateFrom">
+                                <span> {{ selectedCalendarDateFrom }} </span>
+                            </div>
+                        </div>
+                        <div class="tags has-addons">
+                            <div class="tag is-dark">
+                                <span> {{ "weather-data.tags.chosenDateEnd" | translate }} </span>
+                            </div>
+                            <div class="tag is-primary" *ngIf="selectedCalendarDateUntil">
+                                <span> {{ selectedCalendarDateUntil }} </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Download Button -->
+                <div class="has-text-centered">
+                    <button class="button is-primary" [disabled]="" (click)="startWeatherDataDownload()">
+                        Download
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>

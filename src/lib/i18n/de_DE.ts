@@ -4,17 +4,17 @@ export default {
             name: "Wetter",
         },
         title: {
-            name: "Deutscher Wetterdienst",
             name_attribute: "Attribute und Auflösung",
         },
         tags: {
-            name: "Ortsname",
-            state: "Bundesland",
+            name: "Name",
             historical: "Historisch",
-            dataKind: "Datenart",
+            dataKind: "Attribut",
             resolution: "Auflösung",
             availableFrom: "Verfügbar ab:",
             availableUntil: "Verfügbar bis:",
+            chosenDateStart: "Ausgewähltes Startdatum",
+            chosenDateEnd: "Ausgewähltes Enddatum",
         },
         attributes: {
             historical: "Historisch",
