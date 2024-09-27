@@ -17,6 +17,7 @@ export class WeatherDataComponent implements OnInit {
         showHeader: false,
         dateFormat: "dd.MM.yyyy",
         showFooter: false,
+
     }
 
     // dynmic height of components

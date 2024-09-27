@@ -140,11 +140,7 @@
                 </div>
                 <!-- Download Button -->
                 <div class="has-text-centered">
-                    <button
-                        class="button is-primary"
-                        [disabled]="!usedDataType && !usedResolution && !selectedDateStart && !selectedDateEnd"
-                        (click)="startWeatherDataDownload()"
-                    >
+                    <button class="button is-primary" [disabled]="!usedDataType" (click)="startWeatherDataDownload()">
                         Download
                     </button>
                 </div>
