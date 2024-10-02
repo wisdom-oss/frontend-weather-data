@@ -445,7 +445,7 @@ export class WeatherDataComponent implements OnInit {
 
         if (this.station) {
             a.href = url;
-            a.download = `WISdoM_Weather_Data_${this.station.name}_${this.usedDataType}_${this.usedResolution}_${this.selectedDateStart}_${this.selectedDateEnd}`; // Replace with your desired file name
+            a.download = `WISdoM_Weather_Data_${this.station.name}_${this.usedDataType}_${this.usedResolution}_${this.selectedDateStart}_${this.selectedDateEnd}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
